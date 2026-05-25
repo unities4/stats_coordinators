@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Статистика координаторов ЗИ</title>
+<script src="./exceljs.min.js"></script>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' file: 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; worker-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
+<style>
+
+  :root {
+    --blue: #004C97;
+    --blue-dark: #003570;
+    --blue-mid: #005FB5;
+    --blue-light: #E8F0FA;
+    --blue-faint: #F0F5FC;
+    --white: #FFFFFF;
+    --gray-100: #F4F6FA;
+    --gray-200: #E2E8F0;
+    --gray-400: #94A3B8;
+    --gray-600: #475569;
+    --gray-900: #0F172A;
+    --red: #C0392B;
+    --red-light: #FDECEA;
+    --orange: #E07B00;
+    --orange-light: #FFF3E0;
+    --green: #1A7A4A;
+    --green-light: #E8F5EE;
+    --shadow-sm: 0 1px 3px rgba(0,76,151,0.08);
+    --shadow-md: 0 4px 16px rgba(0,76,151,0.12);
+    --shadow-lg: 0 8px 32px rgba(0,76,151,0.16);
+    --radius: 12px;
+    --radius-lg: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'PT Sans', 'Segoe UI', Arial, sans-serif;
+    background: var(--gray-100);
+    color: var(--gray-900);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 60%, var(--blue-mid) 100%);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 200px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .header-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .header-logo {
+    width: 44px; height: 44px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .header-title {
+    font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+    font-size: 20px; font-weight: 700;
+    color: #fff; letter-spacing: -0.3px;
+  }
+  .header-subtitle { font-size: 13px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+  .header-comment {
+    font-size: 12px; color: rgba(255,255,255,0.55);
+    margin-top: 4px; min-width: 200px; max-width: 500px;
+    outline: none; cursor: text;
+    border-bottom: 1px dashed rgba(255,255,255,0.25);
+    padding-bottom: 2px; transition: border-color 0.2s;
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .header-comment:empty::before {
+    content: 'Добавить примечание к отчёту...';
+    color: rgba(255,255,255,0.28);
+    pointer-events: none;
+  }
+  .header-comment:focus {
+    border-bottom-color: rgba(255,255,255,0.6);
+    color: rgba(255,255,255,0.8);
+  }
+  @media print {
+    .header-comment { color: rgba(255,255,255,0.75) !important; border-bottom: none !important; }
+    .header-comment:empty { display: none !important; }
+  }
+  .header-actions { display: flex; gap: 10px; align-items: center; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; border-radius: 8px;
+    font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none; transition: all 0.2s;
+  }
+  .btn-primary { background: var(--white); color: var(--blue); }
+  .btn-primary:hover { background: #E8F0FA; transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  .btn-outline { background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
+  .btn-outline:hover { background: rgba(255,255,255,0.2); }
+  .btn-blue { background: var(--blue); color: #fff; }
+  .btn-blue:hover { background: var(--blue-dark); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+  .main { max-width: 1400px; margin: 0 auto; padding: 28px 32px 48px; }
+
+  /* UPLOAD ZONE */
+  .upload-zone {
+    background: var(--white); border: 2px dashed var(--gray-200);
+    border-radius: var(--radius-lg); padding: 56px 32px;
+    text-align: center; transition: all 0.25s; cursor: pointer;
+  }
+  .upload-zone.drag-over { border-color: var(--blue); background: var(--blue-faint); }
+  .upload-icon {
+    width: 64px; height: 64px; background: var(--blue-faint);
+    border-radius: 16px; display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+  }
+  .upload-title { font-family: 'Montserrat','Segoe UI',Arial,sans-serif; font-size: 18px; font-weight: 700; color: var(--gray-900); margin-bottom: 8px; }
+  .upload-desc { font-size: 14px; color: var(--gray-400); margin-bottom: 20px; }
+  .upload-input { display: none; }
+
+  /* CONTROLS */
+  .controls-bar {
+    background: var(--white); border-radius: var(--radius-lg);
+    padding: 20px 24px; margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+    display: flex; gap: 32px; align-items: flex-end; flex-wrap: wrap;
+  }
+  .control-group { flex: 1; min-width: 200px; }
+  .control-label {
+    font-family: 'Montserrat','Segoe UI',Arial,sans-serif;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    color: var(--gray-400); margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .control-label span {
+    font-size: 13px; font-weight: 700; color: var(--blue);
+    letter-spacing: 0; text-transform: none;
+    background: var(--blue-faint); padding: 2px 8px; border-radius: 20px;
+  }
+  input[type=range] {
+    -webkit-appearance: none; width: 100%; height: 4px;
+    background: var(--gray-200); border-radius: 4px; outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 18px; height: 18px;
+    border-radius: 50%; background: var(--blue); cursor: pointer;
+    box-shadow: 0 0 0 3px rgba(0,76,151,0.15); transition: box-shadow 0.2s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover { box-shadow: 0 0 0 5px rgba(0,76,151,0.2); }
+  .toggle-group {
+    display: flex; background: var(--gray-100);
+    border-radius: 8px; padding: 3px; gap: 2px;
+  }
+  .toggle-btn {
+    flex: 1; padding: 7px 14px; border: none; border-radius: 6px;
+    font-family: 'Montserrat','Segoe UI',Arial,sans-serif; font-size: 12px; font-weight: 600;
+    cursor: pointer; background: transparent; color: var(--gray-400); transition: all 0.2s;
+  }
+  .toggle-btn.active { background: var(--white); color: var(--blue); box-shadow: var(--shadow-sm); }
+
+  /* CARDS */
+  .cards-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px; margin-bottom: 24px;
+  }
+  .card {
+    background: var(--white); border-radius: var(--radius);
+    padding: 20px 22px; box-shadow: var(--shadow-sm);
+    position: relative; overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; background: var(--blue);
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .card.card-red::before { background: var(--red); }
+  .card.card-orange::before { background: var(--orange); }
+  .card.card-green::before { background: var(--green); }
+  .card-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px; background: var(--blue-faint);
+  }
+  .card-red .card-icon { background: var(--red-light); }
+  .card-orange .card-icon { background: var(--orange-light); }
+  .card-green .card-icon { background: var(--green-light); }
+  .card-value {
+    font-family: 'Montserrat','Segoe UI',Arial,sans-serif;
+    font-size: 28px; font-weight: 800; color: var(--gray-900);
+    line-height: 1; margin-bottom: 6px;
+  }
+  .card-metrics {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px; align-items: start;
+  }
+  .card-metrics.single-metric {
+    grid-template-columns: 1fr;
+  }
+  .card-metric { min-width: 0; }
+  .card-metric .card-label { margin-bottom: 0; }
+  .card-label { font-size: 13px; color: var(--gray-400); line-height: 1.4; }
+  .card-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; margin-top: 8px;
+  }
+  .badge-red { background: var(--red-light); color: var(--red); }
+  .badge-orange { background: var(--orange-light); color: var(--orange); }
+  .badge-green { background: var(--green-light); color: var(--green); }
+  .badge-blue { background: var(--blue-faint); color: var(--blue); }
+
+  /* CONTENT GRID */
+  .content-grid { display: grid; grid-template-columns: 1fr 380px; gap: 20px; margin-bottom: 24px; }
+
+  /* SECTION */
+  .section { background: var(--white); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden; border: 1px solid var(--gray-200); }
+  .section-header {
+    padding: 18px 24px; border-bottom: 1px solid var(--gray-200);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .section-title {
+    font-family: 'Montserrat','Segoe UI',Arial,sans-serif;
+    font-size: 15px; font-weight: 700; color: var(--gray-900);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-meta { font-size: 13px; color: var(--gray-400); }
+
+  .filter-tabs {
+    display: flex; gap: 6px; padding: 12px 24px;
+    border-bottom: 1px solid var(--gray-200); background: var(--gray-100);
+  }
+  .filter-tab {
+    padding: 5px 12px; border-radius: 20px;
+    font-family: 'Montserrat','Segoe UI',Arial,sans-serif; font-size: 12px; font-weight: 600;
+    cursor: pointer; border: none; background: transparent;
+    color: var(--gray-400); transition: all 0.2s;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .filter-tab.active { background: var(--white); color: var(--blue); box-shadow: var(--shadow-sm); }
+  .filter-tab .dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    padding: 11px 16px; text-align: center;
+    font-family: 'Montserrat','Segoe UI',Arial,sans-serif;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.6px;
+    color: var(--gray-400); background: var(--gray-100);
+    border-bottom: 1px solid var(--gray-200);
+    white-space: nowrap; cursor: pointer; user-select: none;
+  }
+  thead th:hover { color: var(--blue); }
+  thead th.sorted { color: var(--blue); }
+  tbody tr { transition: background 0.15s; }
+  tbody tr:hover { background: var(--blue-faint); }
+  tbody tr:not(:last-child) td { border-bottom: 1px solid var(--gray-200); }
+  td { padding: 12px 16px; font-size: 14px; color: var(--gray-900); vertical-align: middle; text-align: center; }
+  td.name-cell {
+    font-weight: 600; font-family: 'Montserrat','Segoe UI',Arial,sans-serif;
+    font-size: 13px; max-width: 200px; text-align: left;
+  }
+  td.num-cell { text-align: center; font-family: 'Montserrat','Segoe UI',Arial,sans-serif; font-weight: 600; font-size: 14px; }
+
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 20px;
+    font-family: 'Montserrat','Segoe UI',Arial,sans-serif;
+    font-size: 11px; font-weight: 700; white-space: nowrap;
+  }
+  .status-critical { background: var(--red-light); color: var(--red); }
+  .status-risk { background: var(--orange-light); color: var(--orange); }
+  .status-ok { background: var(--green-light); color: var(--green); }
+  .status-excluded { background: var(--gray-200); color: var(--gray-400); }
+
+  .progress-wrap { display: flex; align-items: center; gap: 8px; }
+  .progress-bar { flex: 1; height: 6px; background: var(--gray-200); border-radius: 4px; overflow: hidden; min-width: 60px; }
+  .progress-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+  .progress-pct { font-family: 'Montserrat','Segoe UI',Arial,sans-serif; font-size: 12px; font-weight: 700; min-width: 36px; text-align: center; }
+
+  .chart-wrap { padding: 20px 24px; }
+  .legend { display: flex; gap: 16px; padding: 0 24px 16px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gray-600); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+  .empty-state { text-align: center; padding: 60px 24px; color: var(--gray-400); }
+  .empty-title { font-family: 'Montserrat','Segoe UI',Arial,sans-serif; font-size: 16px; font-weight: 700; color: var(--gray-600); margin-bottom: 8px; }
+
+  .file-info {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; background: var(--blue-faint);
+    border-radius: 8px; margin-bottom: 20px;
+    border: 1px solid var(--blue-light);
+  }
+  .file-info-name { font-family: 'Montserrat','Segoe UI',Arial,sans-serif; font-size: 13px; font-weight: 700; color: var(--blue); }
+  .file-info-meta { font-size: 12px; color: var(--gray-400); }
+
+  .notification {
+    position: fixed; top: 20px; right: 20px;
+    background: var(--white); border-radius: var(--radius);
+    padding: 14px 18px; box-shadow: var(--shadow-lg);
+    border-left: 4px solid var(--green);
+    display: flex; align-items: center; gap: 10px;
+    font-size: 14px; font-weight: 600; color: var(--gray-900);
+    transform: translateX(120%);
+    transition: transform 0.35s cubic-bezier(.2,.8,.3,1);
+    z-index: 9999; max-width: 340px;
+  }
+  .notification.show { transform: translateX(0); }
+  .notification.error { border-color: var(--red); }
+
+  /* Print-only params summary */
+  .print-params { display: none; }
+  @media print {
+    .print-params {
+      display: block !important;
+      margin-bottom: 16px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .print-params-inner {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .print-param-item {
+      background: #f4f7fc;
+      border: 1px solid #c8d6e8;
+      border-left: 3px solid #004C97;
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .print-param-label {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #6b7a99;
+    }
+    .print-param-val {
+      font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: #004C97;
+      line-height: 1;
+    }
+    .print-param-toggle {
+      display: flex;
+      gap: 4px;
+      margin-top: 1px;
+    }
+    .print-param-toggle-btn {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: #e2e8f0;
+      color: #94a3b8;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .print-param-toggle-btn.pptb-active {
+      background: #004C97;
+      color: #fff;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  }
+
+  .sort-icon { font-size: 10px; margin-left: 4px; opacity: 0.4; }
+  .sort-icon.asc::after { content: '▲'; }
+  .sort-icon.desc::after { content: '▼'; }
+
+  /* ===================== PRINT STYLES ===================== */
+  @media print {
+    @page { size: A4 landscape; margin: 0; }
+
+    /* Hide interactive elements */
+    .header-actions,
+    .upload-zone,
+    .controls-bar,
+    .filter-tabs,
+    .no-print,
+    .notification,
+    #uploadZone,
+    .file-info { display: none !important; }
+
+    /* Скрываем браузерные колонтитулы (дата и URL) через size */
+    html { margin: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body {
+      margin: 0 !important;
+      background: white !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    * {
+      -webkit-user-select: text !important;
+      user-select: text !important;
+    }
+    .main { padding: 12mm 15mm 8mm 15mm !important; }
+
+    /* Header visible in print */
+    .header {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      margin-bottom: 16px;
+    }
+
+    /* Cards on first page — visible with borders, 4 per row */
+    .cards-grid {
+      display: grid !important;
+      grid-template-columns: repeat(4, 1fr) !important;
+      gap: 12px !important;
+      break-after: avoid;
+      margin-bottom: 16px !important;
+    }
+    .card {
+      border: 1.5px solid #b0bec5 !important;
+      box-shadow: none !important;
+      break-inside: avoid;
+      background: white !important;
+      padding: 14px 16px !important;
+    }
+    .card-value { font-size: 22px !important; }
+    .card::before { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .card-icon { -webkit-print-color-adjust: exact; print-color-adjust: exact; margin-bottom: 8px !important; }
+
+    /* Controls bar values — show in print as summary */
+    .controls-bar { display: none !important; }
+
+    /* Table starts on new page with padding */
+    .content-grid {
+      break-before: page;
+      display: block !important;
+      padding-top: 14px !important;
+      padding-bottom: 14px !important;
+    }
+    .section { box-shadow: none !important; border: 1px solid var(--gray-200) !important; margin-bottom: 16px; }
+
+    /* Right panel (chart) hidden in print, table takes full width */
+    .content-grid > .section:last-child { display: none !important; }
+    .content-grid > .section:first-child { width: 100% !important; }
+
+    table { page-break-inside: auto; }
+    tr { break-inside: avoid; }
+    thead { display: table-header-group; }
+
+    /* Progress fills in print */
+    .progress-fill { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .status-badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .badge-red, .badge-orange, .badge-green, .badge-blue { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-in { animation: fadeInUp 0.4s ease forwards; opacity: 0; }
+  .animate-in:nth-child(1) { animation-delay: 0.05s; }
+  .animate-in:nth-child(2) { animation-delay: 0.10s; }
+  .animate-in:nth-child(3) { animation-delay: 0.15s; }
+  .animate-in:nth-child(4) { animation-delay: 0.20s; }
+
+  @media (max-width: 1100px) {
+    .cards-grid { grid-template-columns: repeat(2, 1fr); }
+    .content-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .header-inner { padding: 16px; }
+    .main { padding: 16px; }
+    .cards-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="header-logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="3" width="7" height="7" rx="1.5" fill="white" opacity="0.9"/>
+          <rect x="14" y="3" width="7" height="7" rx="1.5" fill="white" opacity="0.6"/>
+          <rect x="3" y="14" width="7" height="7" rx="1.5" fill="white" opacity="0.6"/>
+          <rect x="14" y="14" width="7" height="7" rx="1.5" fill="white" opacity="0.9"/>
+        </svg>
+      </div>
+      <div>
+        <div class="header-title">Статистика координаторов ЗИ</div>
+        <div class="header-subtitle" id="reportDate">Загрузите файл для анализа</div>
+        <div class="header-comment" id="reportComment" contenteditable="plaintext-only" spellcheck="false"></div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline no-print" onclick="document.getElementById('fileInput').click()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+        </svg>
+        Загрузить файл
+      </button>
+      <button class="btn btn-primary no-print" onclick="exportPDF()" id="btnExport" style="display:none">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+        Скачать PDF
+      </button>
+    </div>
+  </div>
+</header>
+
+<input type="file" id="fileInput" class="upload-input" accept=".xlsx,.xls">
+
+<main class="main">
+
+  <div class="upload-zone" id="uploadZone">
+    <div class="upload-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#004C97" stroke-width="2">
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+    </div>
+    <div class="upload-title">Загрузите Excel-файл со статистикой</div>
+    <div class="upload-desc">Перетащите файл сюда или нажмите для выбора<br>Поддерживаются форматы .xlsx, .xls · Лист «Изменение»</div>
+    <button class="btn btn-blue" onclick="document.getElementById('fileInput').click()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+      </svg>
+      Выбрать файл
+    </button>
+  </div>
+
+  <div id="dashboard" style="display:none">
+
+    <div class="file-info no-print" id="fileInfo">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#004C97" stroke-width="2">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+      </svg>
+      <div>
+        <div class="file-info-name" id="fileName"></div>
+        <div class="file-info-meta" id="fileMeta"></div>
+      </div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="controls-bar no-print">
+      <div class="control-group">
+        <div class="control-label">
+          Мин. кол-во ЗИ у координатора
+          <span id="valMinZI">10</span>
+        </div>
+        <input type="range" id="sliderMinZI" min="1" max="50" value="10" step="1">
+      </div>
+      <div class="control-group">
+        <div class="control-label">
+          Порог просроченных ЗИ (%)
+          <span id="valThreshold">10%</span>
+        </div>
+        <input type="range" id="sliderThreshold" min="1" max="50" value="10" step="1">
+      </div>
+      <div class="control-group">
+        <div class="control-label">
+          Регламентный срок закрытия ЗИ (дн.)
+          <span id="valDays">1</span>
+        </div>
+        <input type="range" id="sliderDays" min="1" max="30" value="1" step="1">
+      </div>
+      <div>
+        <div class="control-label" style="margin-bottom:10px">Показатель дней</div>
+        <div class="toggle-group">
+          <button class="toggle-btn active" id="btnMean" onclick="setMode('mean')">Среднее</button>
+          <button class="toggle-btn" id="btnMedian" onclick="setMode('median')">Медиана</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRINT-ONLY PARAMS SUMMARY -->
+    <div class="print-params" id="printParams">
+      <div class="print-params-inner">
+        <div class="print-param-item">
+          <div class="print-param-label">Мин. кол-во ЗИ у координатора</div>
+          <div class="print-param-val" id="ppMinZI">10</div>
+        </div>
+        <div class="print-param-item">
+          <div class="print-param-label">Порог просроченных ЗИ</div>
+          <div class="print-param-val" id="ppThreshold">10%</div>
+        </div>
+        <div class="print-param-item">
+          <div class="print-param-label">Регламентный срок закрытия</div>
+          <div class="print-param-val" id="ppDays">1 дн.</div>
+        </div>
+        <div class="print-param-item">
+          <div class="print-param-label">Показатель дней</div>
+          <div class="print-param-toggle">
+            <span class="print-param-toggle-btn pptb-active" id="ppBtnMean">Среднее</span>
+            <span class="print-param-toggle-btn" id="ppBtnMedian">Медиана</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARDS -->
+    <div class="cards-grid" id="cardsGrid"></div>
+
+    <!-- CONTENT -->
+    <div class="content-grid">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#004C97" stroke-width="2.5">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+            </svg>
+            Координаторы ЗИ
+          </div>
+          <div class="section-meta" id="tableCount"></div>
+        </div>
+        <div class="filter-tabs no-print">
+          <button class="filter-tab active" data-filter="all" onclick="setFilter('all',this)">
+            <span class="dot" style="background:var(--gray-400)"></span> Все
+          </button>
+          <button class="filter-tab" data-filter="critical" onclick="setFilter('critical',this)">
+            <span class="dot" style="background:var(--red)"></span> Критичные
+          </button>
+          <button class="filter-tab" data-filter="risk" onclick="setFilter('risk',this)">
+            <span class="dot" style="background:var(--orange)"></span> Зона риска
+          </button>
+          <button class="filter-tab" data-filter="ok" onclick="setFilter('ok',this)">
+            <span class="dot" style="background:var(--green)"></span> Соблюдают
+          </button>
+          <button class="filter-tab" data-filter="excluded" onclick="setFilter('excluded',this)">
+            <span class="dot" style="background:var(--gray-400)"></span> Исключены
+          </button>
+        </div>
+        <div style="overflow-x:auto">
+          <table id="mainTable">
+            <thead>
+              <tr>
+                <th onclick="sortTable('name')" id="th-name">Координатор <span class="sort-icon"></span></th>
+                <th onclick="sortTable('total')" id="th-total" style="text-align:center">Всего ЗИ <span class="sort-icon"></span></th>
+                <th onclick="sortTable('overdue')" id="th-overdue" style="text-align:center">Просроч. <span class="sort-icon"></span></th>
+                <th onclick="sortTable('pct')" id="th-pct">Доля просроч. <span class="sort-icon"></span></th>
+                <th onclick="sortTable('days')" id="th-days" style="text-align:center">Дней (ср/мед) <span class="sort-icon"></span></th>
+                <th>Статус</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CHART PANEL -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#004C97" stroke-width="2.5">
+              <line x1="18" y1="20" x2="18" y2="10"/>
+              <line x1="12" y1="20" x2="12" y2="4"/>
+              <line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+            Распределение по статусам
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chartDonut" width="330" height="260"></canvas>
+        </div>
+        <div class="legend" id="chartLegend"></div>
+        <div class="section-header" style="border-top:1px solid var(--gray-200);margin-top:4px">
+          <div class="section-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#004C97" stroke-width="2.5">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+            ТОП-5 по доле просрочки
+          </div>
+        </div>
+        <div id="top5List" style="padding:0 24px 20px;"></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="notification" id="notification">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+    <polyline points="22 4 12 14.01 9 11.01"/>
+  </svg>
+  <span id="notifText"></span>
+</div>
+
+<script>
+// ========== STATE ==========
+let allData = [];
+let currentFilter = 'all';
+let sortField = 'pct';
+let sortDir = 'desc';
+let useMedian = false;
+let params = { minZI: 10, threshold: 10, days: 1 };
+
+// ========== FILE HANDLING ==========
+const fileInput = document.getElementById('fileInput');
+const uploadZone = document.getElementById('uploadZone');
+const reportComment = document.getElementById('reportComment');
+
+function insertPlainTextIntoEditable(text) {
+  const selection = window.getSelection();
+  if (!selection || !selection.rangeCount) {
+    reportComment.textContent += text;
+    return;
+  }
+  const range = selection.getRangeAt(0);
+  range.deleteContents();
+  range.insertNode(document.createTextNode(text));
+  range.collapse(false);
+  selection.removeAllRanges();
+  selection.addRange(range);
+}
+
+reportComment.addEventListener('paste', e => {
+  e.preventDefault();
+  insertPlainTextIntoEditable(e.clipboardData.getData('text/plain'));
+});
+reportComment.addEventListener('drop', e => {
+  e.preventDefault();
+  insertPlainTextIntoEditable(e.dataTransfer.getData('text/plain'));
+});
+reportComment.addEventListener('input', () => {
+  if (reportComment.children.length) {
+    reportComment.textContent = reportComment.textContent;
+  }
+});
+
+uploadZone.addEventListener('click', () => fileInput.click());
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault(); uploadZone.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) processFile(fileInput.files[0]); });
+
+async function processFile(file) {
+  showNotif('Обработка файла...', false, true);
+  try {
+    if (!window.ExcelJS) {
+      throw new Error('Локальная библиотека exceljs.min.js не загружена. Проверьте, что файл exceljs.min.js находится рядом с HTML.');
+    }
+    const buf = await file.arrayBuffer();
+    const wb = new ExcelJS.Workbook();
+    await wb.xlsx.load(buf);
+
+    const ws = wb.getWorksheet('Изменение');
+    if (!ws) { showNotif('Лист «Изменение» не найден!', true); return; }
+
+    const rows = [];
+    ws.eachRow((row, ri) => {
+      if (ri === 1) return;
+      const coordinator = row.getCell(3).value;
+      if (!coordinator) return;
+      const daysRaw = row.getCell(6).value;
+      const days = (daysRaw !== null && daysRaw !== undefined && !isNaN(parseFloat(daysRaw)))
+        ? parseFloat(daysRaw) : null;
+      rows.push({
+        num: row.getCell(1).value,
+        ke: row.getCell(2).value,
+        coordinator: String(coordinator).trim(),
+        dateApprove: row.getCell(4).value,
+        dateClose: row.getCell(5).value,
+        days: days
+      });
+    });
+
+    if (!rows.length) { showNotif('Данные не найдены на листе «Изменение»', true); return; }
+
+    allData = rows;
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileMeta').textContent =
+      `Записей: ${rows.length} · Загружено: ${new Date().toLocaleString('ru')}`;
+    document.getElementById('reportDate').textContent =
+      `Отчёт от ${new Date().toLocaleDateString('ru',{day:'numeric',month:'long',year:'numeric'})}`;
+
+    uploadZone.style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('btnExport').style.display = 'inline-flex';
+    showNotif(`Загружено ${rows.length} записей`);
+    renderAll();
+  } catch(e) {
+    showNotif('Ошибка чтения файла: ' + e.message, true);
+    console.error(e);
+  }
+}
+
+// ========== SLIDERS ==========
+document.getElementById('sliderMinZI').addEventListener('input', function() {
+  params.minZI = +this.value;
+  document.getElementById('valMinZI').textContent = params.minZI;
+  renderAll();
+});
+document.getElementById('sliderThreshold').addEventListener('input', function() {
+  params.threshold = +this.value;
+  document.getElementById('valThreshold').textContent = params.threshold + '%';
+  renderAll();
+});
+document.getElementById('sliderDays').addEventListener('input', function() {
+  params.days = +this.value;
+  document.getElementById('valDays').textContent = params.days;
+  renderAll();
+});
+
+function setMode(m) {
+  useMedian = (m === 'median');
+  document.getElementById('btnMean').classList.toggle('active', !useMedian);
+  document.getElementById('btnMedian').classList.toggle('active', useMedian);
+  // Update header label
+  document.getElementById('th-days').childNodes[0].textContent =
+    (useMedian ? 'Медиана дней ' : 'Среднее дней ');
+  renderAll();
+}
+
+// ========== COMPUTE ==========
+// «Просроченное» ЗИ: значение в столбце 6 (кол-во раб. дней) > params.days
+// Доля просроченных = кол-во просроченных ЗИ / общее кол-во ЗИ координатора * 100%
+function computeStats() {
+  const map = {};
+  for (const r of allData) {
+    if (!map[r.coordinator]) map[r.coordinator] = { total: 0, overdue: 0, daysArr: [] };
+    map[r.coordinator].total++;
+    // Считаем просроченным если days > params.days
+    if (r.days !== null && r.days > params.days) map[r.coordinator].overdue++;
+    if (r.days !== null) map[r.coordinator].daysArr.push(r.days);
+  }
+
+  return Object.entries(map).map(([name, d]) => {
+    const pct = d.total > 0 ? (d.overdue / d.total) * 100 : 0;
+    const mean = d.daysArr.length > 0 ? d.daysArr.reduce((a,b)=>a+b,0)/d.daysArr.length : 0;
+    const sorted = [...d.daysArr].sort((a,b)=>a-b);
+    const mid = Math.floor(sorted.length/2);
+    const median = sorted.length === 0 ? 0
+      : sorted.length % 2 !== 0 ? sorted[mid]
+      : (sorted[mid-1]+sorted[mid])/2;
+
+    // Статус: только если total >= minZI
+    // Категории относительно порога threshold:
+    //   < threshold/2  => ok
+    //   >= threshold/2 && < threshold => risk
+    //   >= threshold   => critical
+    let status = 'excluded';
+    if (d.total >= params.minZI) {
+      if (pct >= params.threshold) status = 'critical';
+      else if (pct >= params.threshold / 2) status = 'risk';
+      else status = 'ok';
+    }
+
+    return { name, total: d.total, overdue: d.overdue, pct, mean, median,
+      daysVal: useMedian ? median : mean, status };
+  });
+}
+
+// ========== RENDER ALL ==========
+function updatePrintParams() {
+  const pp = document.getElementById('printParams');
+  if (!pp) return;
+  document.getElementById('ppMinZI').textContent = params.minZI;
+  document.getElementById('ppThreshold').textContent = params.threshold + '%';
+  document.getElementById('ppDays').textContent = params.days + ' дн.';
+  const btnMean = document.getElementById('ppBtnMean');
+  const btnMedian = document.getElementById('ppBtnMedian');
+  if (btnMean && btnMedian) {
+    btnMean.className = 'print-param-toggle-btn' + (useMedian ? '' : ' pptb-active');
+    btnMedian.className = 'print-param-toggle-btn' + (useMedian ? ' pptb-active' : '');
+  }
+}
+
+function renderAll() {
+  const stats = computeStats();
+  renderCards(stats);
+  renderTable(stats);
+  renderCharts(stats);
+  renderTop5(stats);
+  updatePrintParams();
+}
+
+// ========== CARDS ==========
+function getTableStats(stats) {
+  return currentFilter === 'all'
+    ? stats.filter(r => r.status !== 'excluded')
+    : stats.filter(r => r.status === currentFilter);
+}
+
+function getOverdueDaysMetrics(stats) {
+  const tableStats = getTableStats(stats);
+  const visibleCoordinators = new Set(tableStats.map(r => r.name));
+  const overdueDays = allData
+    .filter(r => visibleCoordinators.has(r.coordinator) && r.days !== null && r.days > params.days)
+    .map(r => r.days)
+    .sort((a, b) => a - b);
+
+  if (!overdueDays.length) {
+    return { count: 0, mean: 0, median: 0 };
+  }
+
+  const mean = overdueDays.reduce((sum, days) => sum + days, 0) / overdueDays.length;
+  const median = overdueDays.length % 2
+    ? overdueDays[Math.floor(overdueDays.length / 2)]
+    : (overdueDays[overdueDays.length / 2 - 1] + overdueDays[overdueDays.length / 2]) / 2;
+
+  return { count: overdueDays.length, mean, median };
+}
+
+function renderCards(stats) {
+  const totalZI = allData.length;
+  const overdueZI = allData.filter(r => r.days !== null && r.days > params.days).length;
+  const overduePct = totalZI > 0 ? ((overdueZI / totalZI) * 100).toFixed(1) : '0.0';
+  const overdueDays = getOverdueDaysMetrics(stats);
+  const critical = stats.filter(s => s.status === 'critical').length;
+  const risk = stats.filter(s => s.status === 'risk').length;
+  const coordTotal = stats.length;
+
+  // Рассчитываем пороги для карточки "зона риска"
+  const riskLow = (params.threshold / 2).toFixed(0);
+  const riskHigh = (params.threshold - 1);
+
+  const grid = document.getElementById('cardsGrid');
+  grid.innerHTML = '';
+
+  const cards = [
+    {
+      cls: '', metrics: [
+        { val: totalZI, label: 'Всего ЗИ', badge: `${coordTotal} чел.`, badgeCls: 'badge-blue' },
+        { val: `${overduePct}%`, label: 'С просрочкой', badge: `${overdueZI} ЗИ`, badgeCls: 'badge-red' }
+      ],
+      icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#004C97" stroke-width="2">
+        <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>`
+    },
+    {
+      cls: 'card-red', metrics: [
+        { val: `${overdueDays.mean.toFixed(1)} дн.`, label: 'Среднее дней', badge: `${overdueDays.count} ЗИ`, badgeCls: 'badge-red' },
+        { val: `${overdueDays.median.toFixed(1)} дн.`, label: 'Медиана дней', badge: 'по просрочке', badgeCls: 'badge-orange' }
+      ],
+      icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`
+    },
+    {
+      cls: 'card-red', val: critical, label: 'Критичные координаторы',
+      badge: `≥ ${params.threshold}% просрочка`, badgeCls: 'badge-red',
+      icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2">
+        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`
+    },
+    {
+      cls: 'card-orange', val: risk, label: 'В зоне риска',
+      badge: `от ${riskLow}% до ${riskHigh}% просрочка`, badgeCls: 'badge-orange',
+      icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E07B00" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`
+    }
+  ];
+
+  cards.forEach((c, i) => {
+    const div = document.createElement('div');
+    div.className = `card ${c.cls} animate-in`;
+    div.style.animationDelay = (i * 0.07) + 's';
+    const metrics = c.metrics || [{ val: c.val, label: c.label, badge: c.badge, badgeCls: c.badgeCls }];
+    const metricsClass = metrics.length === 1 ? 'card-metrics single-metric' : 'card-metrics';
+    div.innerHTML = `
+      <div class="card-icon">${c.icon}</div>
+      <div class="${metricsClass}">
+        ${metrics.map(m => `<div class="card-metric">
+          <div class="card-value">${m.val}</div>
+          <div class="card-label">${m.label}</div>
+          <div class="card-badge ${m.badgeCls}">${m.badge}</div>
+        </div>`).join('')}
+      </div>`;
+    grid.appendChild(div);
+  });
+}
+
+// ========== TABLE ==========
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderAll();
+}
+
+function sortTable(field) {
+  if (sortField === field) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+  else { sortField = field; sortDir = 'desc'; }
+  document.querySelectorAll('thead th').forEach(th => {
+    const si = th.querySelector('.sort-icon');
+    if (si) si.className = 'sort-icon';
+    th.classList.remove('sorted');
+  });
+  const th = document.getElementById('th-' + field);
+  if (th) {
+    th.classList.add('sorted');
+    const si = th.querySelector('.sort-icon');
+    if (si) si.className = 'sort-icon ' + sortDir;
+  }
+  renderAll();
+}
+
+function renderTable(stats) {
+  // Применяем фильтр по статусу (currentFilter)
+  let data = getTableStats(stats);
+
+  // Сортировка
+  data.sort((a,b) => {
+    let va = sortField === 'days' ? a.daysVal : a[sortField];
+    let vb = sortField === 'days' ? b.daysVal : b[sortField];
+    if (typeof va === 'string') va = va.toLowerCase();
+    if (typeof vb === 'string') vb = vb.toLowerCase();
+    if (va < vb) return sortDir === 'asc' ? -1 : 1;
+    if (va > vb) return sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  document.getElementById('tableCount').textContent = `${data.length} из ${stats.length}`;
+
+  const tbody = document.getElementById('tableBody');
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 16px;display:block;opacity:.4">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <div class="empty-title">Нет данных</div>
+      <div>Попробуйте изменить фильтры или пороги слайдеров</div>
+    </div></td></tr>`;
+    return;
+  }
+
+  const maxPct = Math.max(...data.map(d => d.pct), 0.1);
+  const statusMap = {
+    critical: { cls: 'status-critical', label: 'Критичные просрочки' },
+    risk:     { cls: 'status-risk',     label: 'Зона риска' },
+    ok:       { cls: 'status-ok',       label: 'Соблюдает сроки' },
+    excluded: { cls: 'status-excluded', label: `< ${params.minZI} ЗИ (исключён)` }
+  };
+
+  tbody.innerHTML = data.map(r => {
+    const s = statusMap[r.status];
+    const fillColor = r.status === 'critical' ? 'var(--red)'
+      : r.status === 'risk' ? 'var(--orange)'
+      : r.status === 'ok' ? 'var(--green)' : 'var(--gray-400)';
+    const barW = ((r.pct / maxPct) * 100).toFixed(1);
+    return `<tr>
+      <td class="name-cell">${escHtml(r.name)}</td>
+      <td class="num-cell">${r.total}</td>
+      <td class="num-cell">${r.overdue}</td>
+      <td>
+        <div class="progress-wrap">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:${barW}%;background:${fillColor}"></div>
+          </div>
+          <span class="progress-pct" style="color:${fillColor}">${r.pct.toFixed(1)}%</span>
+        </div>
+      </td>
+      <td class="num-cell">${r.daysVal.toFixed(1)}</td>
+      <td><span class="status-badge ${s.cls}">${s.label}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ========== DONUT CHART ==========
+function renderCharts(stats) {
+  const critical = stats.filter(s => s.status === 'critical').length;
+  const risk     = stats.filter(s => s.status === 'risk').length;
+  const ok       = stats.filter(s => s.status === 'ok').length;
+  const excl     = stats.filter(s => s.status === 'excluded').length;
+  drawDonut(
+    [critical, risk, ok, excl],
+    ['#C0392B','#E07B00','#1A7A4A','#94A3B8'],
+    ['Критичные','Зона риска','Соблюдают','Исключены']
+  );
+}
+
+function drawDonut(values, colors, labels) {
+  const canvas = document.getElementById('chartDonut');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 330;
+  canvas.width = W; canvas.height = 220;
+  ctx.clearRect(0, 0, W, 220);
+  const total = values.reduce((a,b)=>a+b,0);
+  if (!total) return;
+  const cx = W/2, cy = 105, r = 80, ri = 52;
+  let angle = -Math.PI/2;
+  values.forEach((v, i) => {
+    if (!v) return;
+    const slice = (v/total)*2*Math.PI;
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,angle,angle+slice); ctx.closePath();
+    ctx.fillStyle = colors[i]; ctx.fill();
+    angle += slice;
+  });
+  ctx.beginPath(); ctx.arc(cx,cy,ri,0,2*Math.PI);
+  ctx.fillStyle='#fff'; ctx.fill();
+  ctx.fillStyle='#0F172A';
+  ctx.font='bold 26px Montserrat,Segoe UI,Arial,sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(total, cx, cy-8);
+  ctx.font='12px PT Sans,Segoe UI,Arial,sans-serif';
+  ctx.fillStyle='#94A3B8';
+  ctx.fillText('координаторов', cx, cy+14);
+  document.getElementById('chartLegend').innerHTML =
+    values.map((v,i) => `<div class="legend-item">
+      <div class="legend-dot" style="background:${colors[i]}"></div>
+      ${labels[i]}: <strong>${v}</strong>
+    </div>`).join('');
+}
+
+// ========== TOP-5 ==========
+function renderTop5(stats) {
+  const top5 = [...stats].filter(s=>s.status!=='excluded')
+    .sort((a,b)=>b.pct-a.pct).slice(0,5);
+  const el = document.getElementById('top5List');
+  if (!top5.length) { el.innerHTML=''; return; }
+  const maxPct = top5[0].pct || 1;
+  el.innerHTML = top5.map((r,i) => {
+    const color = r.status==='critical' ? 'var(--red)' : r.status==='risk' ? 'var(--orange)' : 'var(--green)';
+    return `<div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span style="font-size:12px;font-weight:600;color:var(--gray-900);max-width:200px;
+          overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${i+1}. ${escHtml(r.name)}</span>
+        <span style="font-family:'Montserrat','Segoe UI',Arial,sans-serif;font-size:12px;font-weight:700;color:${color}">${r.pct.toFixed(1)}%</span>
+      </div>
+      <div class="progress-bar" style="height:8px">
+        <div class="progress-fill" style="width:${(r.pct/maxPct*100).toFixed(1)}%;background:${color}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ========== PDF ==========
+function exportPDF() {
+  window.print();
+}
+
+// ========== HELPERS ==========
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function showNotif(msg, isError=false, loading=false) {
+  const n = document.getElementById('notification');
+  document.getElementById('notifText').textContent = msg;
+  n.className = 'notification' + (isError ? ' error' : '');
+  n.classList.add('show');
+  if (!loading) setTimeout(()=>n.classList.remove('show'), 3000);
+}
+
+window.addEventListener('resize', () => {
+  if (allData.length > 0) renderCharts(computeStats());
+});
+</script>
+</body>
+</html>
