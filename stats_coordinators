@@ -500,7 +500,7 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
 .tbl-ctrl-btn svg { flex-shrink:0; display:block; }
 /* Column picker dropdown */
 .col-picker-wrap { position:relative; }
-.col-picker-dropdown { position:absolute; right:0; top:calc(100% + 6px); background:#fff; border:1px solid var(--gray-200); border-radius:10px; box-shadow:var(--shadow-md); z-index:600; min-width:200px; padding:8px 0; display:none; }
+.col-picker-dropdown { position:absolute; right:0; top:calc(100% + 6px); background:#fff; border:1px solid var(--gray-200); border-radius:10px; box-shadow:var(--shadow-md); z-index:600; min-width:200px; padding:0; display:none; max-height:calc(100vh - 80px); overflow:hidden; }
 .col-picker-dropdown.open { display:block; }
 .col-picker-item { display:flex; align-items:center; gap:8px; padding:6px 14px; cursor:pointer; font-size:12px; color:var(--gray-700); transition:background 0.1s; user-select:none; }
 .col-picker-item:hover { background:var(--gray-100); }
@@ -569,8 +569,8 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
   </div>
 </header>
 
-<input type="file" id="fileInput"  accept=".xlsx,.xls" style="display:none">
-<input type="file" id="fileInput2" accept=".xlsx,.xls" style="display:none">
+<input type="file" id="fileInput"  accept=".xlsx" style="display:none">
+<input type="file" id="fileInput2" accept=".xlsx" style="display:none">
 
 <!-- SETTINGS PANEL -->
 <div class="settings-overlay no-print" id="settingsOverlay">
@@ -638,6 +638,11 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       Подвисшие ЗИ
     </button>
+    <!-- Отдельная вкладка: ЗИ на документировании -->
+    <button class="tab-btn" id="tabBtnDoc" onclick="switchTab('doc',this)" style="display:none">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+      ЗИ на документировании
+    </button>
   </div>
 </nav>
 
@@ -683,7 +688,7 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
       </svg>
     </div>
     <div class="upload-title">Загрузите Excel-файл со статистикой</div>
-    <div class="upload-desc">Форматы .xlsx, .xls · Лист «Изменение»</div>
+    <div class="upload-desc">Формат .xlsx · Лист «Изменение»</div>
     <button class="btn btn-blue" id="btnUploadZone">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
       Выбрать файл
@@ -1213,7 +1218,7 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
           <div class="section-header">
             <div class="section-title">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-              Распределение подвисших ЗИ по дате регистрации
+              <span class="distrib-title">Распределение ЗИ по дате регистрации</span>
             </div>
             <div style="display:flex;align-items:center;gap:10px">
               <div class="toggle-group" id="hungRegToggle">
@@ -1234,7 +1239,7 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
           <div class="section-header">
             <div class="section-title">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-              Где скопились подвисшие ЗИ (топ-10)
+              <span class="distrib-title">Где скопились подвисшие ЗИ (топ-10)</span>
             </div>
             <div style="display:flex;align-items:center;gap:10px">
               <div class="toggle-group" id="hungTopToggle">
@@ -1384,6 +1389,130 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
       </div>
 
     </div><!-- /hungBody --></div><!-- /tabHung -->
+    <!-- TAB: ЗИ НА ДОКУМЕНТИРОВАНИИ -->
+    <div id="tabDoc" style="display:none">
+
+      <!-- Заглушка: файл подвисших не загружен -->
+      <div id="docPlaceholder" class="module-empty no-print">
+        <div class="module-empty-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#004C97" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div class="module-empty-title">Файл с подвисшими ЗИ не загружен</div>
+        <div class="module-empty-desc">Загрузите файл «Подвисшие ЗИ» (со столбцом Q), чтобы увидеть ЗИ на документировании.</div>
+        <button class="btn btn-blue" onclick="document.getElementById('fileInput2').click()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          Загрузить файл
+        </button>
+      </div>
+
+      <div id="docBody">
+        <!-- DOC CONTROLS -->
+        <div class="controls-bar no-print">
+          <div class="control-group">
+            <div class="control-label">Порог для просроченных РЗ (раб. дн.) <span id="valDocThreshold">5</span></div>
+            <input type="range" id="sliderDocThreshold" min="1" max="30" value="5" step="1" oninput="onDocSliderChange()">
+          </div>
+          <div>
+            <div class="control-label" style="margin-bottom:10px">Показатель дней</div>
+            <div class="toggle-group">
+              <button class="toggle-btn active" id="btnDocMean" onclick="setDocMode('mean')">Среднее</button>
+              <button class="toggle-btn" id="btnDocMedian" onclick="setDocMode('median')">Медиана</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- DOC CARDS -->
+        <div class="cards-grid" id="docCardsGrid" style="grid-template-columns:repeat(4,1fr)"></div>
+
+        <!-- DOC: два блока в один ряд -->
+        <div class="breakdown-grid" style="margin-bottom:20px">
+          <!-- DOC: распределение по дате регистрации -->
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                <span class="distrib-title">Распределение ЗИ по дате регистрации</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="toggle-group" id="docRegToggle">
+                  <button class="toggle-btn active" onclick="setDocRegMode('year',this)">Год</button>
+                  <button class="toggle-btn" onclick="setDocRegMode('quarter',this)">Квартал</button>
+                  <button class="toggle-btn" onclick="setDocRegMode('month',this)">Месяц</button>
+                </div>
+                <button class="section-collapse-btn no-print" onclick="event.stopPropagation(); toggleSection(this)" title="Свернуть/развернуть"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+              </div>
+            </div>
+            <div style="padding:16px 24px 20px">
+              <div id="docRegDistrib"></div>
+            </div>
+          </div>
+          <!-- DOC: где скопились (топ) -->
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                <span class="distrib-title">Где скопились ЗИ (топ-10)</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="toggle-group" id="docTopToggle">
+                  <button class="toggle-btn active" onclick="setDocTopDim('coordinator',this)">Координатор</button>
+                  <button class="toggle-btn" onclick="setDocTopDim('sl',this)">СЛ</button>
+                  <button class="toggle-btn" onclick="setDocTopDim('bd',this)">БН</button>
+                  <button class="toggle-btn" onclick="setDocTopDim('ke',this)">КЕ</button>
+                </div>
+                <button class="section-collapse-btn no-print" onclick="event.stopPropagation(); toggleSection(this)" title="Свернуть/развернуть"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+              </div>
+            </div>
+            <div style="padding:14px 24px 18px">
+              <div id="docTopBreakdown"></div>
+            </div>
+          </div>
+        </div><!-- /breakdown-grid -->
+
+        <!-- DOC TABLE -->
+        <div class="section" style="margin-bottom:20px">
+          <div class="section-header">
+            <div class="section-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#004C97" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+              ЗИ на документировании — просроченные РЗ
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="section-meta" id="docTableCount">0</div>
+              <div class="tbl-ctrl-group no-print">
+                <div class="col-picker-wrap">
+                  <button class="tbl-ctrl-btn" onclick="toggleColPicker('docTableBody', this)" title="Настройка столбцов">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="6" height="18" rx="1"/><rect x="15" y="3" width="6" height="18" rx="1"/></svg>
+                    Столбцы
+                  </button>
+                </div>
+                <button class="tbl-ctrl-btn" onclick="downloadTableExcel('docTableBody', 'На документировании', 'ЗИ_на_документировании')">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                  Excel
+                </button>
+              </div>
+              <button class="section-collapse-btn no-print" onclick="event.stopPropagation(); toggleSection(this)" title="Свернуть/развернуть"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table id="docTable">
+              <thead><tr>
+                <th id="docth-num" onclick="sortDoc('num')">Номер ЗИ <span class="sort-icon"></span></th>
+                <th id="docth-ke" onclick="sortDoc('ke')">КЕ <span class="sort-icon"></span></th>
+                <th id="docth-coordinator" onclick="sortDoc('coordinator')">Координатор <span class="sort-icon"></span></th>
+                <th id="docth-sl" onclick="sortDoc('sl')">СЛ <span class="sort-icon"></span></th>
+                <th id="docth-bd" onclick="sortDoc('bd')">БН <span class="sort-icon"></span></th>
+                <th id="docth-category" onclick="sortDoc('category')">Категория <span class="sort-icon"></span></th>
+                <th id="docth-kind" onclick="sortDoc('kind')">Вид <span class="sort-icon"></span></th>
+                <th id="docth-dateApprove" onclick="sortDoc('dateApprove')">Дата последнего согласования <span class="sort-icon"></span></th>
+                <th id="docth-colQ" onclick="sortDoc('colQ')">Срок выполнения РЗ <span class="sort-icon"></span></th>
+                <th id="docth-daysLeft" onclick="sortDoc('daysLeft')">Раб. дней до порога <span class="sort-icon desc"></span></th>
+              </tr></thead>
+              <tbody id="docTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div><!-- /docBody -->
+    </div><!-- /tabDoc -->
   </div><!-- /dashboard -->
 </main>
 
@@ -1459,14 +1588,31 @@ headerTitle.addEventListener('paste', e=>{e.preventDefault();document.execComman
 const reportComment = document.getElementById('reportComment');
 reportComment.addEventListener('paste', e=>{e.preventDefault();reportComment.textContent+=e.clipboardData.getData('text/plain');});
 
+// ====== XLSX VALIDATION ======
+// ExcelJS читает только OOXML .xlsx (zip). При попытке открыть старый .xls,
+// защищённый паролем или повреждённый файл библиотека падает с невнятным
+// "Cannot read properties of undefined (reading 'sheets')". Поэтому проверяем
+// сигнатуру файла заранее и даём понятное сообщение.
+async function readXlsxWorkbook(file) {
+  if (!window.ExcelJS) throw new Error('Библиотека ExcelJS не загружена. Убедитесь, что exceljs.min.js находится рядом с файлом.');
+  const buf = await file.arrayBuffer();
+  const sig = new Uint8Array(buf.slice(0, 4));
+  const isZip = sig[0] === 0x50 && sig[1] === 0x4B && sig[2] === 0x03 && sig[3] === 0x04; // 'PK\x03\x04' — zip/xlsx
+  const isOle = sig[0] === 0xD0 && sig[1] === 0xCF && sig[2] === 0x11 && sig[3] === 0xE0; // старый .xls / зашифрованный (OLE/CFB)
+  if (!isZip) {
+    if (isOle) throw new Error('Это старый формат .xls или файл, защищённый паролем. Откройте его в Excel и сохраните как «Книга Excel (.xlsx)».');
+    throw new Error('Файл не является корректным .xlsx (возможно, повреждён или это .csv/.xls). Пересохраните его в Excel как .xlsx.');
+  }
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.load(buf);
+  return wb;
+}
+
 // ====== PROCESS FILE ======
 async function processFile(file) {
   showNotif('Обработка файла...', false, true);
   try {
-    if (!window.ExcelJS) throw new Error('Библиотека ExcelJS не загружена. Убедитесь, что exceljs.min.js находится рядом с файлом.');
-    const buf = await file.arrayBuffer();
-    const wb = new ExcelJS.Workbook();
-    await wb.xlsx.load(buf);
+    const wb = await readXlsxWorkbook(file);
     const ws = wb.getWorksheet('Изменение');
     if (!ws) { showNotif('Лист «Изменение» не найден!', true); return; }
 
@@ -1924,6 +2070,7 @@ function applyFilters() {
   }
   // Обновляем подвисшие всегда когда данные загружены (фильтры общие)
   if (hungData.length) renderHungPage();
+  if (hungData.length && currentTab === 'doc') renderDocPage();
   requestAnimationFrame(() => window.scrollTo({ top: savedScrollY, behavior: 'instant' }));
 }
 
@@ -2384,17 +2531,19 @@ function switchTab(tab,el) {
   document.getElementById('tabStats').style.display   = tab==='stats'   ? 'block' : 'none';
   document.getElementById('tabCompare').style.display = tab==='compare' ? 'block' : 'none';
   document.getElementById('tabHung').style.display    = tab==='hung'    ? 'block' : 'none';
+  document.getElementById('tabDoc').style.display     = tab==='doc'     ? 'block' : 'none';
   updateModuleViews();
   refreshChromeForTab();
   if (tab==='compare' && allData.length) { setTimeout(renderTrendChart, 30); }
   if (tab==='hung') { if (hungData.length) renderHungPage(); }
+  if (tab==='doc')  { if (hungData.length) renderDocPage(); }
 }
 
 // Показывает контент модуля либо заглушку «Загрузить файл», если файл не загружен.
 // stats и compare работают на данных файла статистики (loadedStats);
 // hung — на данных файла подвисших (loadedHung).
 function updateModuleViews() {
-  const loadedMap = { stats: loadedStats, compare: loadedStats, hung: loadedHung };
+  const loadedMap = { stats: loadedStats, compare: loadedStats, hung: loadedHung, doc: loadedHung };
   Object.keys(loadedMap).forEach(tab => {
     const body = document.getElementById(tab+'Body');
     const ph   = document.getElementById(tab+'Placeholder');
@@ -2405,7 +2554,7 @@ function updateModuleViews() {
 
 // Фильтры и кнопки экспорта показываем только если данные активной вкладки загружены.
 function refreshChromeForTab() {
-  const loaded = currentTab==='hung' ? loadedHung : loadedStats;
+  const loaded = (currentTab==='hung' || currentTab==='doc') ? loadedHung : loadedStats;
   const fb = document.getElementById('filtersBar');
   if (fb) fb.style.display = loaded ? '' : 'none';
   ['btnExport','btnExportExcel'].forEach(id => {
@@ -3035,8 +3184,9 @@ function processHungFile(wb) {
     const dateReg     = excelSerialToDate(row.getCell(14).value); // N: Дата регистрации
     const coordStatus  = String(row.getCell(15).value||'').trim().toLowerCase(); // O: Состояние координатора
     const coordManager = String(row.getCell(16).value||'').trim();               // P: Лин. рук. координатора
+    const colQ         = excelSerialToDate(row.getCell(17).value);              // Q: дата для документирования
 
-    hungData.push({ num, status, approval, ke, coordinator, sl, bd, category, kind, deadline, dateApprove, dateRZ, dateReg, coordStatus, coordManager });
+    hungData.push({ num, status, approval, ke, coordinator, sl, bd, category, kind, deadline, dateApprove, dateRZ, dateReg, coordStatus, coordManager, colQ });
   });
 
   console.log(`Hung: loaded ${hungData.length} rows, ${hungHolidays.size} holidays`);
@@ -3284,7 +3434,7 @@ function renderHungPage() {
   // Block 1: Утверждено + max(dateApprove, dateRZ) + N раб. дней < сегодня
   // Просрочка начинается со следующего рабочего дня ПОСЛЕ дедлайна (> , не >=)
   const approved = hungData
-    .filter(r => r.approval === 'Утверждено' && rowMatchesFilters(r))
+    .filter(r => r.status === 'Утверждение документации' && r.approval === 'Утверждено' && rowMatchesFilters(r))
     .map(r => {
       // Берём наибольшую из дат: Дата последнего согласования (L) и Дата закрытия РЗ (M)
       let base = r.dateApprove;
@@ -3302,7 +3452,7 @@ function renderHungPage() {
 
   // Block 2: Запрошено + срок выполнения согласования < сегодня
   const requested = hungData
-    .filter(r => r.approval === 'Запрошено' && rowMatchesFilters(r))
+    .filter(r => r.status === 'Утверждение документации' && r.approval === 'Запрошено' && rowMatchesFilters(r))
     .filter(r => {
       if (!r.deadline) return false;
       const dl = new Date(r.deadline); dl.setHours(0,0,0,0);
@@ -3316,7 +3466,7 @@ function renderHungPage() {
 
   // Block 3: Отклонено + дата посл. согласования + N раб. дней < сегодня
   const rejected = hungData
-    .filter(r => r.approval === 'Отклонено' && rowMatchesFilters(r))
+    .filter(r => r.status === 'Утверждение документации' && r.approval === 'Отклонено' && rowMatchesFilters(r))
     .map(r => {
       const limitDate = addWorkDays(r.dateApprove, rejDays);
       // daysSince = рабочие дни от даты отклонения (L) до сегодня (без слайдера)
@@ -3424,9 +3574,9 @@ function renderHungPage() {
     </div>`;
 
   // m = всего ЗИ с соответствующим статусом утверждения (с учётом фильтров)
-  const totApprStatus = hungData.filter(r => r.approval === 'Утверждено' && rowMatchesFilters(r)).length;
-  const totReqStatus  = hungData.filter(r => r.approval === 'Запрошено'  && rowMatchesFilters(r)).length;
-  const totRejStatus  = hungData.filter(r => r.approval === 'Отклонено'  && rowMatchesFilters(r)).length;
+  const totApprStatus = hungData.filter(r => r.status === 'Утверждение документации' && r.approval === 'Утверждено' && rowMatchesFilters(r)).length;
+  const totReqStatus  = hungData.filter(r => r.status === 'Утверждение документации' && r.approval === 'Запрошено'  && rowMatchesFilters(r)).length;
+  const totRejStatus  = hungData.filter(r => r.status === 'Утверждение документации' && r.approval === 'Отклонено'  && rowMatchesFilters(r)).length;
   document.getElementById('hungApprovedCount').textContent  = `${approved.length} из ${totApprStatus}`;
   document.getElementById('hungRequestedCount').textContent = `${requested.length} из ${totReqStatus}`;
   document.getElementById('hungRejectedCount').textContent  = `${rejected.length} из ${totRejStatus}`;
@@ -3554,6 +3704,7 @@ function updateModuleBadges() {
     document.getElementById('btnSettings').style.display     = 'flex';
     // Все вкладки доступны при загрузке любого файла — в т.ч. вкладка другого модуля.
     document.getElementById('tabBtnHung').style.display  = 'flex';
+    document.getElementById('tabBtnDoc').style.display   = 'flex';
   }
 
   updateModuleViews();
@@ -3564,9 +3715,7 @@ document.getElementById('fileInput2').addEventListener('change', async function(
   const file = e.target.files[0]; if (!file) return;
   try {
     showNotif('Загрузка файла подвисших...');
-    const buf = await file.arrayBuffer();
-    const wb = new ExcelJS.Workbook();
-    await wb.xlsx.load(buf);
+    const wb = await readXlsxWorkbook(file);
     processHungFile(wb);
     loadedHung = true;
     updateModuleBadges();
@@ -3597,6 +3746,7 @@ const TABLE_COLS = {
   hungApprovedBody:  [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата согласования',v:true},{id:'overdueDays',label:'Дней просрочки',v:true},{id:'manager',label:'Лин. рук. координатора',v:false}],
   hungRequestedBody: [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата согласования',v:true},{id:'deadline',label:'Срок согласования',v:true},{id:'overdueDays',label:'Дней просрочки',v:true},{id:'manager',label:'Лин. рук. координатора',v:false}],
   hungRejectedBody:  [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата согласования',v:true},{id:'daysSince',label:'Дней с отклонения',v:true},{id:'manager',label:'Лин. рук. координатора',v:false}],
+  docTableBody:      [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'daysLeft',label:'Раб. дней до порога',v:true}],
 };
 
 function toggleColPicker(tableId, btn) {
@@ -3607,18 +3757,33 @@ function toggleColPicker(tableId, btn) {
   let picker = document.getElementById(pickerId);
   if (!picker) {
     picker = buildColPicker(tableId);
-    btn.closest('.col-picker-wrap').appendChild(picker);
+    // Append to body so fixed positioning works correctly
+    document.body.appendChild(picker);
   }
   picker.classList.toggle('open');
-  // При открытии позиционируем fixed относительно кнопки — чтобы дропдаун
-  // не обрезался overflow:hidden у .section и отображался поверх блоков.
+  // Smart positioning: fixed relative to button; flip upward if near bottom
   if (picker.classList.contains('open')) {
     const r = btn.getBoundingClientRect();
     picker.style.position = 'fixed';
-    picker.style.top = (r.bottom + 6) + 'px';
     picker.style.left = 'auto';
     picker.style.right = (window.innerWidth - r.right) + 'px';
     picker.style.zIndex = '4000';
+    picker.style.bottom = 'auto';
+    picker.style.top = 'auto';
+    // Temporarily place below to measure height
+    picker.style.top = (r.bottom + 6) + 'px';
+    // After paint, check if dropdown fits below; if not, flip above
+    requestAnimationFrame(() => {
+      const ph = picker.offsetHeight || 200;
+      const spaceBelow = window.innerHeight - r.bottom - 10;
+      const spaceAbove = r.top - 10;
+      if (ph > spaceBelow && spaceAbove > spaceBelow) {
+        // Flip: show above the button
+        picker.style.top = Math.max(8, r.top - ph - 6) + 'px';
+      } else {
+        picker.style.top = (r.bottom + 6) + 'px';
+      }
+    });
   }
 }
 
@@ -3628,17 +3793,45 @@ function buildColPicker(tableId) {
   div.className = 'col-picker-dropdown';
   div.id = 'colPicker_' + tableId;
   div.dataset.tblid = tableId;
-  div.innerHTML = cols.map((c,i) => `
+  // Actions bar (select all / deselect all)
+  const actBar = `<div style="padding:6px 10px 4px;border-bottom:1px solid var(--gray-200);display:flex;gap:6px;background:var(--white);border-radius:10px 10px 0 0">
+    <button class="ms-act-btn" onclick="colPickerSelectAll('${tableId}')">Все</button>
+    <button class="ms-act-btn" onclick="colPickerClearAll('${tableId}')">Снять все</button>
+  </div>`;
+  const items = cols.map((c,i) => `
     <label class="col-picker-item">
       <input type="checkbox" ${c.v?'checked':''} onchange="onColToggle('${tableId}',${i},this.checked)">
       ${c.label}
     </label>`).join('');
+  div.innerHTML = actBar + `<div style="max-height:280px;overflow-y:auto;">${items}</div>`;
   return div;
+}
+
+function colPickerSelectAll(tableId) {
+  const cols = TABLE_COLS[tableId] || [];
+  cols.forEach((c, i) => { c.v = true; });
+  // Sync checkboxes
+  const picker = document.getElementById('colPicker_' + tableId);
+  if (picker) picker.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = true);
+  applyColVisibility(tableId);
+  // Re-render doc page if docTableBody to apply visibility to dynamically built rows
+  if (tableId === 'docTableBody') renderDocPage();
+}
+
+function colPickerClearAll(tableId) {
+  const cols = TABLE_COLS[tableId] || [];
+  // Keep at least one column visible (the last one)
+  cols.forEach((c, i) => { c.v = (i === cols.length - 1); });
+  const picker = document.getElementById('colPicker_' + tableId);
+  if (picker) picker.querySelectorAll('input[type=checkbox]').forEach((cb, i) => cb.checked = (i === cols.length - 1));
+  applyColVisibility(tableId);
+  if (tableId === 'docTableBody') renderDocPage();
 }
 
 function onColToggle(tableId, idx, checked) {
   if (TABLE_COLS[tableId]) TABLE_COLS[tableId][idx].v = checked;
   applyColVisibility(tableId);
+  if (tableId === 'docTableBody') renderDocPage();
 }
 
 function applyColVisibility(tableId) {
@@ -3661,7 +3854,7 @@ function applyColVisibility(tableId) {
 }
 
 document.addEventListener('click', e => {
-  if (!e.target.closest('.col-picker-wrap')) {
+  if (!e.target.closest('.col-picker-wrap') && !e.target.closest('.col-picker-dropdown')) {
     document.querySelectorAll('.col-picker-dropdown.open').forEach(d => d.classList.remove('open'));
   }
 });
@@ -3750,6 +3943,11 @@ function downloadPageExcel() {
     sheets.push(tableToSheetData('hungApprovedBody','Утверждено'));
     sheets.push(tableToSheetData('hungRequestedBody','Запрошено'));
     sheets.push(tableToSheetData('hungRejectedBody','Отклонено'));
+  } else {
+    const tabDoc = document.getElementById('tabDoc');
+    if (tabDoc && tabDoc.style.display !== 'none') {
+      sheets.push(tableToSheetData('docTableBody','На документировании'));
+    }
   }
   buildAndDownloadExcel(sheets, 'Отчёт_'+new Date().toLocaleDateString('ru').replace(/\./g,'-'));
 }
@@ -3768,6 +3966,304 @@ document.addEventListener('DOMContentLoaded', initSectionHeaderClicks);
 setTimeout(initSectionHeaderClicks, 500);
 // Начальное состояние переключателя scope (по умолчанию метрика 'pct')
 (function(){ const sg=document.getElementById('trendScopeGroup'); if(sg){ sg.style.opacity='0.4'; sg.style.pointerEvents='none'; } })();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TAB: ЗИ НА ДОКУМЕНТИРОВАНИИ
+// ═══════════════════════════════════════════════════════════════════════════
+let docSortState = { field: 'daysLeft', dir: 'asc' };
+let docUseMedian = false;
+let docRegMode = 'year';
+let docTopDim  = 'coordinator';
+let _docFiltered = [];
+
+function setDocMode(mode) {
+  docUseMedian = mode === 'median';
+  document.getElementById('btnDocMean').classList.toggle('active', !docUseMedian);
+  document.getElementById('btnDocMedian').classList.toggle('active', docUseMedian);
+  renderDocPage();
+}
+
+function setDocRegMode(mode, btn) {
+  docRegMode = mode;
+  document.querySelectorAll('#docRegToggle .toggle-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderDocRegDistrib();
+}
+
+function setDocTopDim(dim, btn) {
+  docTopDim = dim;
+  document.querySelectorAll('#docTopToggle .toggle-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderDocTopBreakdown();
+}
+
+function onDocSliderChange() {
+  document.getElementById('valDocThreshold').textContent = document.getElementById('sliderDocThreshold').value;
+  renderDocPage();
+}
+
+function sortDoc(field) {
+  if (docSortState.field === field) {
+    docSortState.dir = docSortState.dir === 'asc' ? 'desc' : 'asc';
+  } else {
+    docSortState.field = field;
+    docSortState.dir = 'desc';
+  }
+  renderDocPage();
+}
+
+function updateDocSortIndicator() {
+  const s = docSortState;
+  document.querySelectorAll('th[id^="docth-"]').forEach(th => {
+    const si = th.querySelector('.sort-icon');
+    if (si) si.className = 'sort-icon';
+    th.classList.remove('sorted');
+  });
+  const activeTh = document.getElementById('docth-' + s.field);
+  if (activeTh) {
+    activeTh.classList.add('sorted');
+    const si = activeTh.querySelector('.sort-icon');
+    if (si) si.className = 'sort-icon ' + s.dir;
+  }
+}
+
+function docRowMatchesFilters(r) {
+  if (msSelected['KE'].size    && !msSelected['KE'].has(r.ke))            return false;
+  if (msSelected['SL'].size    && !msSelected['SL'].has(r.sl))            return false;
+  if (msSelected['BD'].size    && !msSelected['BD'].has(r.bd))            return false;
+  if (msSelected['COORD'].size && !msSelected['COORD'].has(r.coordinator)) return false;
+  if (msSelected['STATUS'].size && !msSelected['STATUS'].has(r.coordStatus)) return false;
+  if (msSelected['CAT'].size   && !msSelected['CAT'].has(r.category))     return false;
+  if (msSelected['KIND'].size  && !msSelected['KIND'].has(r.kind))        return false;
+  if (msSelected['REGYEAR'].size || msSelected['REGMONTH'].size) {
+    if (!r.dateReg || !(r.dateReg instanceof Date) || isNaN(r.dateReg))   return false;
+    if (msSelected['REGYEAR'].size  && !msSelected['REGYEAR'].has(String(r.dateReg.getFullYear()))) return false;
+    if (msSelected['REGMONTH'].size && !msSelected['REGMONTH'].has(`${r.dateReg.getFullYear()}-${String(r.dateReg.getMonth()+1).padStart(2,'0')}`)) return false;
+  }
+  return true;
+}
+
+function renderDocPage() {
+  if (!hungData.length) return;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const thresholdDays = parseInt(document.getElementById('sliderDocThreshold').value) || 5;
+
+  // Deadline = today + thresholdDays working days
+  const deadlineDate = addWorkDays(today, thresholdDays);
+
+  const docRows = hungData
+    .filter(r => {
+      if (r.status !== 'Документирование') return false;
+      if (!docRowMatchesFilters(r)) return false;
+      if (!r.colQ || !(r.colQ instanceof Date) || isNaN(r.colQ)) return false;
+      const q = new Date(r.colQ); q.setHours(0,0,0,0);
+      return q < deadlineDate;
+    })
+    .map(r => {
+      const q = new Date(r.colQ); q.setHours(0,0,0,0);
+      const daysLeft = q >= today ? countWorkDays(today, q) : -countWorkDays(q, today);
+      return { ...r, daysLeft };
+    });
+
+  _docFiltered = docRows;
+
+  // ── CARDS ──
+  const total = docRows.length;
+  const totalAll = hungData.filter(r => r.status === 'Документирование' && docRowMatchesFilters(r)).length;
+  const overdue = docRows.filter(r => r.daysLeft < 0).length;
+  const daysArr = docRows.map(r => r.daysLeft).sort((a,b)=>a-b);
+  const mean = daysArr.length ? daysArr.reduce((s,v)=>s+v,0)/daysArr.length : 0;
+  const mid = Math.floor(daysArr.length/2);
+  const median = daysArr.length === 0 ? 0 : daysArr.length % 2 !== 0 ? daysArr[mid] : (daysArr[mid-1]+daysArr[mid])/2;
+  const minVal = daysArr.length ? daysArr[0] : 0;
+  const maxVal = daysArr.length ? daysArr[daysArr.length-1] : 0;
+  const daysMetricVal = docUseMedian ? median : mean;
+  const daysMetricLabel = docUseMedian ? 'медиана' : 'среднее';
+
+  document.getElementById('docCardsGrid').innerHTML = `
+    <div class="card card-info animate-in" style="grid-column:span 2">
+      <div class="distrib-header">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#004C97" stroke-width="2" style="flex-shrink:0">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+          <rect x="9" y="3" width="6" height="4" rx="1"/>
+          <line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/>
+        </svg>
+        <div class="distrib-title">Общая информация</div>
+      </div>
+      <div class="info-metrics">
+        <div class="info-metric">
+          <div class="info-val">${total}</div>
+          <div class="info-label">Всего ЗИ</div>
+          <div class="card-badge badge-blue">${new Set(docRows.map(r=>r.ke).filter(Boolean)).size} ИТ-систем</div>
+        </div>
+        <div class="info-sep"></div>
+        <div class="info-metric">
+          <div class="info-val">${new Set(docRows.map(r=>r.coordinator).filter(Boolean)).size}</div>
+          <div class="info-label">Координаторов</div>
+          <div class="card-badge badge-blue">затронуто</div>
+        </div>
+        <div class="info-sep"></div>
+        <div class="info-metric">
+          <div class="info-val" style="color:#dc2626">${overdue}</div>
+          <div class="info-label">Просроченных РЗ</div>
+          <div class="card-badge badge-red">${total ? Math.round(overdue/total*100) : 0}%</div>
+        </div>
+        <div class="info-sep"></div>
+        <div class="info-metric">
+          <div class="info-val" style="color:#d97706">${total - overdue}</div>
+          <div class="info-label">В пределах порога</div>
+          <div class="card-badge badge-orange">${total ? Math.round((total-overdue)/total*100) : 0}%</div>
+        </div>
+      </div>
+    </div>
+    <div class="card card-distrib animate-in" style="grid-column:span 2">
+      <div class="distrib-header">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#004C97" stroke-width="2" style="flex-shrink:0">
+          <line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="18" y1="20" x2="18" y2="10"/>
+        </svg>
+        <div class="distrib-title">Раб. дней до порога (${daysMetricLabel})</div>
+      </div>
+      <div class="distrib-segments">
+        <div class="distrib-seg2">
+          <div class="distrib-seg2-val" style="color:${daysMetricVal < 0 ? '#dc2626' : daysMetricVal <= 2 ? '#d97706' : '#16a34a'}">${daysMetricVal.toFixed(1)}</div>
+          <div class="distrib-seg2-label">${daysMetricLabel} раб. дн.</div>
+          <div class="card-badge badge-blue">${docUseMedian ? 'медиана' : 'среднее'}</div>
+        </div>
+        <div class="distrib-sep"></div>
+        <div class="distrib-seg2">
+          <div class="distrib-seg2-val" style="color:#dc2626">${minVal}</div>
+          <div class="distrib-seg2-label">минимум</div>
+          <div class="card-badge badge-red">раб. дн.</div>
+        </div>
+        <div class="distrib-sep"></div>
+        <div class="distrib-seg2">
+          <div class="distrib-seg2-val" style="color:#16a34a">${maxVal}</div>
+          <div class="distrib-seg2-label">максимум</div>
+          <div class="card-badge badge-green">раб. дн.</div>
+        </div>
+      </div>
+    </div>`;
+
+  // ── SORT + TABLE ──
+  updateDocSortIndicator();
+  const s = docSortState;
+  const sorted = [...docRows].sort((a, b) => {
+    let av = a[s.field], bv = b[s.field];
+    if (av instanceof Date && bv instanceof Date) return s.dir === 'asc' ? av - bv : bv - av;
+    if (typeof av === 'number') return s.dir === 'asc' ? av - bv : bv - av;
+    if (typeof av === 'string') return s.dir === 'asc' ? av.localeCompare(bv, 'ru') : bv.localeCompare(av, 'ru');
+    return 0;
+  });
+
+  const fmt = d => d ? d.toLocaleDateString('ru-RU') : '—';
+  const dayColor = d => d < 0 ? '#dc2626' : d <= 2 ? '#d97706' : '#16a34a';
+
+  const colsCfg = TABLE_COLS['docTableBody'] || [];
+  const body = document.getElementById('docTableBody');
+  if (!sorted.length) {
+    body.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--gray-400)">Нет ЗИ, удовлетворяющих условиям фильтра</td></tr>`;
+  } else {
+    body.innerHTML = sorted.map(r => {
+      const dc = dayColor(r.daysLeft);
+      const dayLabel = r.daysLeft < 0 ? `просрочка ${Math.abs(r.daysLeft)} раб. дн.` : `${r.daysLeft} раб. дн.`;
+      const firedBadge = r.coordStatus === 'уволен' ? '<span class="badge-fired">Уволен</span>' : '';
+      const showDateApprove = colsCfg.find(c=>c.id==='dateApprove')?.v !== false;
+      const showColQ = colsCfg.find(c=>c.id==='colQ')?.v !== false;
+      return `<tr>
+        <td style="font-weight:600;white-space:nowrap">${escHtml(r.num)}</td>
+        <td>${escHtml(r.ke)}</td>
+        <td>${escHtml(r.coordinator)}${firedBadge}</td>
+        <td>${escHtml(r.sl)}</td>
+        <td>${escHtml(r.bd)}</td>
+        <td>${escHtml(r.category || '')}</td>
+        <td>${escHtml(r.kind || '')}</td>
+        <td style="white-space:nowrap;display:${showDateApprove?'':'none'}">${fmt(r.dateApprove)}</td>
+        <td style="white-space:nowrap;display:${showColQ?'':'none'}">${fmt(r.colQ)}</td>
+        <td class="num-cell" style="color:${dc}">${dayLabel}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  document.getElementById('docTableCount').textContent = `${sorted.length} из ${totalAll}`;
+
+  // Apply column visibility
+  applyColVisibility('docTableBody');
+
+  // ── BREAKDOWN ──
+  renderDocRegDistrib();
+  renderDocTopBreakdown();
+}
+
+function renderDocRegDistrib() {
+  const el = document.getElementById('docRegDistrib');
+  if (!el) return;
+  const buckets = new Map();
+  let noDate = 0;
+  _docFiltered.forEach(r => {
+    const k = regPeriodKey(r.dateReg, docRegMode);
+    if (k === '(не указано)') { noDate++; return; }
+    buckets.set(k, (buckets.get(k) || 0) + 1);
+  });
+  let keys;
+  if (docRegMode === 'month' && msSelected['REGMONTH'].size === 0) {
+    const dates = _docFiltered.map(r => r.dateReg).filter(d => d instanceof Date && !isNaN(d));
+    if (dates.length) {
+      let minD = dates.reduce((a,b) => a < b ? a : b);
+      let maxD = dates.reduce((a,b) => a > b ? a : b);
+      keys = [];
+      let y = minD.getFullYear(), m = minD.getMonth() + 1;
+      const ey = maxD.getFullYear(), em = maxD.getMonth() + 1;
+      while (y < ey || (y === ey && m <= em)) {
+        keys.push(`${y}-${String(m).padStart(2,'0')}`);
+        m++; if (m > 12) { m = 1; y++; }
+      }
+    } else keys = [];
+  } else {
+    keys = [...buckets.keys()].sort((a,b) => a.localeCompare(b));
+  }
+  if (!keys.length) {
+    el.innerHTML = `<div class="hung-empty">Нет данных о дате регистрации${noDate ? ` (${noDate} ЗИ без даты)` : ''}</div>`;
+    return;
+  }
+  const rows = keys.map(k => [k, buckets.get(k) || 0]);
+  const maxV = Math.max(...rows.map(r => r[1]), 1);
+  const bars = rows.map(([k,v]) => {
+    const h = v > 0 ? Math.max(8, Math.round((v/maxV)*100)) : 0;
+    const barStyle = v > 0 ? `height:${h}%` : `height:3px;background:var(--gray-200)`;
+    const valLabel = v > 0 ? `<div class="rd-bar-val">${v}</div>` : `<div class="rd-bar-val" style="color:var(--gray-400)">0</div>`;
+    return `<div class="rd-bar-wrap" title="${escAttr(regPeriodLabel(k,docRegMode))}: ${v}">
+      ${valLabel}
+      <div class="rd-bar" style="${barStyle}"></div>
+      <div class="rd-bar-lbl">${escHtml(regPeriodLabel(k,docRegMode))}</div>
+    </div>`;
+  }).join('');
+  const note = noDate ? `<div class="rd-note">Без даты регистрации: ${noDate}</div>` : '';
+  el.innerHTML = `<div class="rd-chart">${bars}</div>${note}`;
+}
+
+function renderDocTopBreakdown() {
+  const el = document.getElementById('docTopBreakdown');
+  if (!el) return;
+  const field = docTopDim;
+  const buckets = new Map();
+  _docFiltered.forEach(r => {
+    const k = (r[field] || '').trim() || '(не указано)';
+    buckets.set(k, (buckets.get(k) || 0) + 1);
+  });
+  const rows = [...buckets.entries()].sort((a,b) => b[1]-a[1]).slice(0,10);
+  if (!rows.length) { el.innerHTML = `<div class="hung-empty">Нет данных</div>`; return; }
+  const maxV = rows[0][1];
+  el.innerHTML = rows.map(([k,v]) => {
+    const w = Math.max(2, Math.round(v/maxV*100));
+    return `<div class="tb-row">
+      <div class="tb-name" title="${escAttr(k)}">${escHtml(k)}</div>
+      <div class="tb-bar-track"><div class="tb-bar-fill" style="width:${w}%"></div></div>
+      <div class="tb-val">${v}</div>
+    </div>`;
+  }).join('');
+}
 
 </script>
 
