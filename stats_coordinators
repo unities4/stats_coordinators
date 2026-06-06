@@ -1469,23 +1469,23 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
           </div>
         </div><!-- /breakdown-grid -->
 
-        <!-- DOC TABLE -->
-        <div class="section" style="margin-bottom:20px">
+        <!-- DOC TABLES x3 -->
+        <div class="section" style="margin-bottom:16px">
           <div class="section-header">
             <div class="section-title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#004C97" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
-              ЗИ на документировании — просроченные РЗ
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+              До 6 мес.
             </div>
             <div style="display:flex;align-items:center;gap:10px">
-              <div class="section-meta" id="docTableCount">0</div>
+              <div class="section-meta" id="docTableCountShort">0</div>
               <div class="tbl-ctrl-group no-print">
                 <div class="col-picker-wrap">
-                  <button class="tbl-ctrl-btn" onclick="toggleColPicker('docTableBody', this)" title="Настройка столбцов">
+                  <button class="tbl-ctrl-btn" onclick="toggleColPicker('docTableBodyShort', this)" title="Настройка столбцов">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="6" height="18" rx="1"/><rect x="15" y="3" width="6" height="18" rx="1"/></svg>
                     Столбцы
                   </button>
                 </div>
-                <button class="tbl-ctrl-btn" onclick="downloadTableExcel('docTableBody', 'На документировании', 'ЗИ_на_документировании')">
+                <button class="tbl-ctrl-btn" onclick="downloadTableExcel('docTableBodyShort', 'До 6 мес.', 'ЗИ_документирование_Short')">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
                   Excel
                 </button>
@@ -1494,20 +1494,102 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
             </div>
           </div>
           <div style="overflow-x:auto">
-            <table id="docTable">
+            <table id="docTableShort">
               <thead><tr>
-                <th id="docth-num" onclick="sortDoc('num')">Номер ЗИ <span class="sort-icon"></span></th>
-                <th id="docth-ke" onclick="sortDoc('ke')">КЕ <span class="sort-icon"></span></th>
-                <th id="docth-coordinator" onclick="sortDoc('coordinator')">Координатор <span class="sort-icon"></span></th>
-                <th id="docth-sl" onclick="sortDoc('sl')">СЛ <span class="sort-icon"></span></th>
-                <th id="docth-bd" onclick="sortDoc('bd')">БН <span class="sort-icon"></span></th>
-                <th id="docth-category" onclick="sortDoc('category')">Категория <span class="sort-icon"></span></th>
-                <th id="docth-kind" onclick="sortDoc('kind')">Вид <span class="sort-icon"></span></th>
-                <th id="docth-dateApprove" onclick="sortDoc('dateApprove')">Дата последнего согласования <span class="sort-icon"></span></th>
-                <th id="docth-colQ" onclick="sortDoc('colQ')">Срок выполнения РЗ <span class="sort-icon"></span></th>
-                <th id="docth-daysLeft" onclick="sortDoc('daysLeft')">Просрочка <span class="sort-icon desc"></span></th>
+                <th onclick="sortDoc('Short','num')">Номер ЗИ <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Short','ke')">КЕ <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Short','coordinator')">Координатор <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Short','sl')">СЛ <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Short','bd')">БН <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Short','category')">Категория <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Short','kind')">Вид <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Short','dateApprove')">Дата посл. согласования <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Short','colQ')">Срок выполнения РЗ <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Short','daysLeft')">Просрочка <span class="sort-icon desc"></span></th>
               </tr></thead>
-              <tbody id="docTableBody"></tbody>
+              <tbody id="docTableBodyShort"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="section" style="margin-bottom:16px">
+          <div class="section-header">
+            <div class="section-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+              Свыше 6 мес. до года
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="section-meta" id="docTableCountMid">0</div>
+              <div class="tbl-ctrl-group no-print">
+                <div class="col-picker-wrap">
+                  <button class="tbl-ctrl-btn" onclick="toggleColPicker('docTableBodyMid', this)" title="Настройка столбцов">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="6" height="18" rx="1"/><rect x="15" y="3" width="6" height="18" rx="1"/></svg>
+                    Столбцы
+                  </button>
+                </div>
+                <button class="tbl-ctrl-btn" onclick="downloadTableExcel('docTableBodyMid', 'Свыше 6 мес. до года', 'ЗИ_документирование_Mid')">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                  Excel
+                </button>
+              </div>
+              <button class="section-collapse-btn no-print" onclick="event.stopPropagation(); toggleSection(this)" title="Свернуть/развернуть"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table id="docTableMid">
+              <thead><tr>
+                <th onclick="sortDoc('Mid','num')">Номер ЗИ <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Mid','ke')">КЕ <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Mid','coordinator')">Координатор <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Mid','sl')">СЛ <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Mid','bd')">БН <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Mid','category')">Категория <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Mid','kind')">Вид <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Mid','dateApprove')">Дата посл. согласования <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Mid','colQ')">Срок выполнения РЗ <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Mid','daysLeft')">Просрочка <span class="sort-icon desc"></span></th>
+              </tr></thead>
+              <tbody id="docTableBodyMid"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="section" style="margin-bottom:16px">
+          <div class="section-header">
+            <div class="section-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+              Свыше года
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="section-meta" id="docTableCountLong">0</div>
+              <div class="tbl-ctrl-group no-print">
+                <div class="col-picker-wrap">
+                  <button class="tbl-ctrl-btn" onclick="toggleColPicker('docTableBodyLong', this)" title="Настройка столбцов">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="6" height="18" rx="1"/><rect x="15" y="3" width="6" height="18" rx="1"/></svg>
+                    Столбцы
+                  </button>
+                </div>
+                <button class="tbl-ctrl-btn" onclick="downloadTableExcel('docTableBodyLong', 'Свыше года', 'ЗИ_документирование_Long')">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                  Excel
+                </button>
+              </div>
+              <button class="section-collapse-btn no-print" onclick="event.stopPropagation(); toggleSection(this)" title="Свернуть/развернуть"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table id="docTableLong">
+              <thead><tr>
+                <th onclick="sortDoc('Long','num')">Номер ЗИ <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Long','ke')">КЕ <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Long','coordinator')">Координатор <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Long','sl')">СЛ <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Long','bd')">БН <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Long','category')">Категория <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Long','kind')">Вид <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Long','dateApprove')">Дата посл. согласования <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Long','colQ')">Срок выполнения РЗ <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Long','daysLeft')">Просрочка <span class="sort-icon desc"></span></th>
+              </tr></thead>
+              <tbody id="docTableBodyLong"></tbody>
             </table>
           </div>
         </div>
@@ -3748,6 +3830,9 @@ const TABLE_COLS = {
   hungRequestedBody: [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата согласования',v:true},{id:'deadline',label:'Срок согласования',v:true},{id:'overdueDays',label:'Дней просрочки',v:true},{id:'manager',label:'Лин. рук. координатора',v:false}],
   hungRejectedBody:  [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата согласования',v:true},{id:'daysSince',label:'Дней с отклонения',v:true},{id:'manager',label:'Лин. рук. координатора',v:false}],
   docTableBody:      [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'daysLeft',label:'Просрочка',v:true}],
+  docTableBodyShort: [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'daysLeft',label:'Просрочка',v:true}],
+  docTableBodyMid:   [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'daysLeft',label:'Просрочка',v:true}],
+  docTableBodyLong:  [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'daysLeft',label:'Просрочка',v:true}],
 };
 
 function toggleColPicker(tableId, btn) {
@@ -3810,29 +3895,29 @@ function buildColPicker(tableId) {
 
 function colPickerSelectAll(tableId) {
   const cols = TABLE_COLS[tableId] || [];
-  cols.forEach((c, i) => { c.v = true; });
-  // Sync checkboxes
+  cols.forEach(c => { c.v = true; });
+  // Sync checkboxes in the existing (open) picker — do NOT remove it
   const picker = document.getElementById('colPicker_' + tableId);
-  if (picker) picker.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = true);
+  if (picker) picker.querySelectorAll('input[type=checkbox]').forEach(cb => { cb.checked = true; });
   applyColVisibility(tableId);
-  // Re-render doc page if docTableBody to apply visibility to dynamically built rows
-  if (tableId === 'docTableBody') renderDocPage();
+  if (tableId.startsWith('docTableBody')) renderDocPage();
 }
 
 function colPickerClearAll(tableId) {
   const cols = TABLE_COLS[tableId] || [];
-  // Keep at least one column visible (the last one)
-  cols.forEach((c, i) => { c.v = (i === cols.length - 1); });
+  // Keep at least first column visible
+  cols.forEach((c, i) => { c.v = (i === 0); });
+  // Sync checkboxes in the existing (open) picker — do NOT remove it
   const picker = document.getElementById('colPicker_' + tableId);
-  if (picker) picker.querySelectorAll('input[type=checkbox]').forEach((cb, i) => cb.checked = (i === cols.length - 1));
+  if (picker) picker.querySelectorAll('input[type=checkbox]').forEach((cb, i) => { cb.checked = (i === 0); });
   applyColVisibility(tableId);
-  if (tableId === 'docTableBody') renderDocPage();
+  if (tableId.startsWith('docTableBody')) renderDocPage();
 }
 
 function onColToggle(tableId, idx, checked) {
   if (TABLE_COLS[tableId]) TABLE_COLS[tableId][idx].v = checked;
   applyColVisibility(tableId);
-  if (tableId === 'docTableBody') renderDocPage();
+  if (tableId === 'docTableBody' || tableId.startsWith('docTableBody')) renderDocPage();
 }
 
 function applyColVisibility(tableId) {
@@ -3860,8 +3945,10 @@ document.addEventListener('click', e => {
   }
 });
 
-// fixed-дропдаун не следует за прокруткой — закрываем его при скролле
-window.addEventListener('scroll', () => {
+// fixed-дропдаун не следует за прокруткой — закрываем его при скролле страницы,
+// но не при скролле внутри самого дропдауна
+window.addEventListener('scroll', (e) => {
+  if (e.target && e.target.closest && e.target.closest('.col-picker-dropdown')) return;
   document.querySelectorAll('.col-picker-dropdown.open').forEach(d => d.classList.remove('open'));
 }, true);
 
@@ -3947,7 +4034,9 @@ function downloadPageExcel() {
   } else {
     const tabDoc = document.getElementById('tabDoc');
     if (tabDoc && tabDoc.style.display !== 'none') {
-      sheets.push(tableToSheetData('docTableBody','На документировании'));
+      sheets.push(tableToSheetData('docTableBodyShort','До 6 мес.'));
+      sheets.push(tableToSheetData('docTableBodyMid','Свыше 6 мес. до года'));
+      sheets.push(tableToSheetData('docTableBodyLong','Свыше года'));
     }
   }
   buildAndDownloadExcel(sheets, 'Отчёт_'+new Date().toLocaleDateString('ru').replace(/\./g,'-'));
@@ -3971,7 +4060,7 @@ setTimeout(initSectionHeaderClicks, 500);
 // ═══════════════════════════════════════════════════════════════════════════
 // TAB: ЗИ НА ДОКУМЕНТИРОВАНИИ
 // ═══════════════════════════════════════════════════════════════════════════
-let docSortState = { field: 'daysLeft', dir: 'asc' };
+// docSortState: see docSortStates per-table below
 let docUseMedian = false;
 let docRegMode = 'year';
 let docTopDim  = 'coordinator';
@@ -4003,29 +4092,47 @@ function onDocSliderChange() {
   renderDocPage();
 }
 
-function sortDoc(field) {
-  if (docSortState.field === field) {
-    docSortState.dir = docSortState.dir === 'asc' ? 'desc' : 'asc';
+// docSortState per table: Short, Mid, Long
+const docSortStates = {
+  Short: { field: 'daysLeft', dir: 'asc' },
+  Mid:   { field: 'daysLeft', dir: 'asc' },
+  Long:  { field: 'daysLeft', dir: 'asc' },
+};
+
+function sortDoc(suffix, field) {
+  const s = docSortStates[suffix];
+  if (!s) return;
+  if (s.field === field) {
+    s.dir = s.dir === 'asc' ? 'desc' : 'asc';
   } else {
-    docSortState.field = field;
-    docSortState.dir = 'desc';
+    s.field = field;
+    s.dir = 'desc';
   }
   renderDocPage();
 }
 
 function updateDocSortIndicator() {
-  const s = docSortState;
-  document.querySelectorAll('th[id^="docth-"]').forEach(th => {
-    const si = th.querySelector('.sort-icon');
-    if (si) si.className = 'sort-icon';
-    th.classList.remove('sorted');
+  ['Short','Mid','Long'].forEach(suffix => {
+    const s = docSortStates[suffix];
+    const tbody = document.getElementById('docTableBody' + suffix);
+    if (!tbody) return;
+    const tbl = tbody.closest('table');
+    if (!tbl) return;
+    tbl.querySelectorAll('th').forEach(th => {
+      const si = th.querySelector('.sort-icon');
+      if (si) si.className = 'sort-icon';
+      th.classList.remove('sorted');
+    });
+    // Sort icon on the active column (by position in header)
+    const headers = [...tbl.querySelectorAll('thead th')];
+    const fieldOrder = ['num','ke','coordinator','sl','bd','category','kind','dateApprove','colQ','daysLeft'];
+    const idx = fieldOrder.indexOf(s.field);
+    if (idx >= 0 && headers[idx]) {
+      headers[idx].classList.add('sorted');
+      const si = headers[idx].querySelector('.sort-icon');
+      if (si) si.className = 'sort-icon ' + s.dir;
+    }
   });
-  const activeTh = document.getElementById('docth-' + s.field);
-  if (activeTh) {
-    activeTh.classList.add('sorted');
-    const si = activeTh.querySelector('.sort-icon');
-    if (si) si.className = 'sort-icon ' + s.dir;
-  }
 }
 
 function docRowMatchesFilters(r) {
@@ -4196,50 +4303,62 @@ function renderDocPage() {
       </div>
     </div>`;
 
-  // ── SORT + TABLE ──
+  // ── SORT + 3 TABLES ──
   updateDocSortIndicator();
-  const s = docSortState;
-  const sorted = [...docRows].sort((a, b) => {
-    let av = a[s.field], bv = b[s.field];
-    if (av instanceof Date && bv instanceof Date) return s.dir === 'asc' ? av - bv : bv - av;
-    if (typeof av === 'number') return s.dir === 'asc' ? av - bv : bv - av;
-    if (typeof av === 'string') return s.dir === 'asc' ? av.localeCompare(bv, 'ru') : bv.localeCompare(av, 'ru');
-    return 0;
-  });
 
   const fmt = d => d ? d.toLocaleDateString('ru-RU') : '—';
   const dayColor = d => d < 0 ? '#dc2626' : d <= 2 ? '#d97706' : '#16a34a';
 
-  const colsCfg = TABLE_COLS['docTableBody'] || [];
-  const body = document.getElementById('docTableBody');
-  if (!sorted.length) {
-    body.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--gray-400)">Нет ЗИ, удовлетворяющих условиям фильтра</td></tr>`;
-  } else {
-    body.innerHTML = sorted.map(r => {
-      const dc = dayColor(r.daysLeft);
-      const dayLabel = `${r.daysLeft} раб. дней`;
-      const firedBadge = r.coordStatus === 'уволен' ? '<span class="badge-fired">Уволен</span>' : '';
-      const showDateApprove = colsCfg.find(c=>c.id==='dateApprove')?.v !== false;
-      const showColQ = colsCfg.find(c=>c.id==='colQ')?.v !== false;
-      return `<tr>
-        <td style="font-weight:600;white-space:nowrap">${escHtml(r.num)}</td>
-        <td>${escHtml(r.ke)}</td>
-        <td>${escHtml(r.coordinator)}${firedBadge}</td>
-        <td>${escHtml(r.sl)}</td>
-        <td>${escHtml(r.bd)}</td>
-        <td>${escHtml(r.category || '')}</td>
-        <td>${escHtml(r.kind || '')}</td>
-        <td style="white-space:nowrap;display:${showDateApprove?'':'none'}">${fmt(r.dateApprove)}</td>
-        <td style="white-space:nowrap;display:${showColQ?'':'none'}">${fmt(r.colQ)}</td>
-        <td class="num-cell" style="color:${dc}">${dayLabel}</td>
-      </tr>`;
-    }).join('');
+  // Split by colR (calendar days): Short <=180, Mid 181-365, Long >365
+  const groupDefs = [
+    { suffix: 'Short', filter: r => { const v = parseColR(r); return v === null || v <= 180; } },
+    { suffix: 'Mid',   filter: r => { const v = parseColR(r); return v !== null && v > 180 && v <= 365; } },
+    { suffix: 'Long',  filter: r => { const v = parseColR(r); return v !== null && v > 365; } },
+  ];
+
+  function renderDocRowsToTable(rows, suffix) {
+    const s = docSortStates[suffix];
+    const sorted = [...rows].sort((a, b) => {
+      let av = a[s.field], bv = b[s.field];
+      if (av instanceof Date && bv instanceof Date) return s.dir === 'asc' ? av - bv : bv - av;
+      if (typeof av === 'number') return s.dir === 'asc' ? av - bv : bv - av;
+      if (typeof av === 'string') return s.dir === 'asc' ? av.localeCompare(bv, 'ru') : bv.localeCompare(av, 'ru');
+      return 0;
+    });
+    const body = document.getElementById('docTableBody' + suffix);
+    if (!body) return;
+    if (!sorted.length) {
+      body.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--gray-400)">Нет ЗИ</td></tr>`;
+    } else {
+      body.innerHTML = sorted.map(r => {
+        const dc = dayColor(r.daysLeft);
+        const dayLabel = r.daysLeft < 0
+          ? `${Math.abs(r.daysLeft)} раб. дн. (просрочено)`
+          : r.daysLeft === 0 ? `срок сегодня` : `осталось ${r.daysLeft} раб. дн.`;
+        const firedBadge = r.coordStatus === 'уволен' ? '<span class="badge-fired">Уволен</span>' : '';
+        return `<tr>
+          <td style="font-weight:600;white-space:nowrap">${escHtml(r.num)}</td>
+          <td>${escHtml(r.ke)}</td>
+          <td>${escHtml(r.coordinator)}${firedBadge}</td>
+          <td>${escHtml(r.sl)}</td>
+          <td>${escHtml(r.bd)}</td>
+          <td>${escHtml(r.category || '')}</td>
+          <td>${escHtml(r.kind || '')}</td>
+          <td style="white-space:nowrap">${fmt(r.dateApprove)}</td>
+          <td style="white-space:nowrap">${fmt(r.colQ)}</td>
+          <td class="num-cell" style="color:${dc}">${dayLabel}</td>
+        </tr>`;
+      }).join('');
+    }
+    const countEl = document.getElementById('docTableCount' + suffix);
+    if (countEl) countEl.textContent = `${sorted.length} из ${totalAll}`;
+    applyColVisibility('docTableBody' + suffix);
   }
 
-  document.getElementById('docTableCount').textContent = `${sorted.length} из ${totalAll}`;
-
-  // Apply column visibility
-  applyColVisibility('docTableBody');
+  groupDefs.forEach(g => {
+    const groupRows = docRows.filter(g.filter);
+    renderDocRowsToTable(groupRows, g.suffix);
+  });
 
   // ── BREAKDOWN ──
   renderDocRegDistrib();
