@@ -370,7 +370,7 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
 
 
 /* ── DISTRIBUTION CARD ── */
-.card-distrib { display:flex; flex-direction:column; gap:14px; padding:20px; }
+.card-distrib { display:flex; flex-direction:column; gap:12px; padding:14px 8px; }
 .distrib-header { display:flex; align-items:center; gap:10px; flex-shrink:0; min-width:0; }
 .distrib-title { font-family:'Montserrat','Segoe UI',Arial,sans-serif; font-size:12px; font-weight:700; color:var(--gray-900); line-height:1.2; white-space:nowrap; }
 .distrib-segments { display:flex; align-items:stretch; gap:0; flex:1; }
@@ -391,15 +391,15 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
 
 
 /* ── INFO CARD ── */
-.card-info { display:flex; flex-direction:column; gap:14px; padding:20px; }
+.card-info { display:flex; flex-direction:column; gap:12px; padding:14px 8px; }
 .info-metrics { display:flex; align-items:center; gap:0; flex:1; }
-.info-metric { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:8px 6px; text-align:center; }
+.info-metric { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:8px 4px; text-align:center; }
 .info-val { font-family:'Montserrat','Segoe UI',Arial,sans-serif; font-size:26px; font-weight:800; line-height:1; color:var(--gray-900); }
 .info-label { font-size:11px; color:var(--gray-500); line-height:1.2; }
 .info-sep { width:1px; background:var(--gray-200); height:48px; flex-shrink:0; }
 
 
-.distrib-seg2 { flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; padding:8px 12px; text-align:center; }
+.distrib-seg2 { flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; padding:8px 6px; text-align:center; }
 .distrib-seg2-val { font-family:'Montserrat','Segoe UI',Arial,sans-serif; font-size:20px; font-weight:800; line-height:1.1; }
 .distrib-seg2-label { font-size:11px; color:var(--gray-500); line-height:1.3; }
 
@@ -420,7 +420,7 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
 .module-empty-desc { font-size:14px; color:var(--gray-400); max-width:440px; line-height:1.5; }
 /* Карточка распределения по дате регистрации (вертикальные столбцы) */
 .rd-chart { display:flex; align-items:flex-end; gap:10px; min-height:120px; padding:8px 4px 0; overflow-x:auto; }
-.rd-bar-wrap { display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:6px; min-width:40px; flex:1 0 auto; height:100%; }
+.rd-bar-wrap { display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:4px; min-width:40px; flex:1 0 auto; height:100%; }
 .rd-bar { width:100%; max-width:48px; min-height:3px; background:linear-gradient(180deg,#2563eb,#60a5fa); border-radius:6px 6px 0 0; transition:height 0.3s; }
 .rd-bar-val { font-size:12px; font-weight:700; color:var(--gray-900); }
 .rd-bar-lbl { font-size:10px; color:var(--gray-400); text-align:center; white-space:nowrap; }
@@ -430,11 +430,12 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
 .stats-reg-wrap { background:var(--white); border-radius:var(--radius); border:1px solid var(--gray-200); padding:14px 16px 10px; margin-bottom:20px; box-shadow:var(--shadow-sm); }
 .stats-reg-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; gap:12px; flex-wrap:wrap; }
 .stats-reg-title { font-family:'Montserrat','Segoe UI',Arial,sans-serif; font-size:12px; font-weight:700; color:var(--gray-900); display:flex; align-items:center; gap:6px; }
-.stats-reg-chart { overflow-x:auto; }
-.stats-reg-chart .rd-chart { min-height:0; height:90px; padding:0; gap:6px; }
-.stats-reg-chart .rd-bar-wrap { min-width:32px; }
+.stats-reg-chart { overflow-x:auto; flex:1; display:flex; flex-direction:column; }
+.stats-reg-chart .rd-chart { min-height:200px; height:200px; flex:none; align-items:flex-end; padding:0; gap:6px; }
+.stats-reg-chart .rd-bar-wrap { min-width:32px; height:100%; }
+.stats-reg-chart .rd-bar-track { flex:1 1 auto; width:100%; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:4px; }
 .stats-reg-chart .rd-bar-val { font-size:10px; }
-.stats-reg-chart .rd-bar-lbl { font-size:9px; }
+.stats-reg-chart .rd-bar-lbl { font-size:9px; flex:0 0 auto; }
 .hung-empty { padding:28px 16px; text-align:center; color:var(--gray-400); font-size:13px; }
 /* Топ-разбивка (горизонтальные бары) */
 .tb-row { display:grid; grid-template-columns:190px 1fr 46px; align-items:start; gap:12px; padding:6px 0; }
@@ -908,23 +909,34 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
         </div>
       </div>
 
-      <!-- CARDS -->
+      <!-- CARDS (обычные карточки) -->
       <div class="cards-grid" id="cardsGrid"></div>
 
-      <!-- STATS REG DISTRIB -->
-      <div class="stats-reg-wrap no-print" id="statsRegWrap" style="display:none">
-        <div class="stats-reg-header">
-          <div class="stats-reg-title">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#004C97" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Распределение ЗИ по дате регистрации
+      <!-- LAYOUT: [Общая инфо + Координаторы] | [Распределение по дате] -->
+      <div id="statsLayoutWrap" style="display:none;flex-direction:column;gap:16px;margin-bottom:20px;align-items:stretch">
+        <!-- Левая колонка: две карточки стопкой -->
+        <div id="statsCardsCol" style="display:flex;flex-direction:column;gap:16px;width:100%"></div>
+        <!-- Правая колонка: блок распределения по дате -->
+        <div class="stats-reg-wrap no-print" id="statsRegWrap" style="width:100%;min-width:0;margin-bottom:0;display:flex;flex-direction:column">
+          <div class="stats-reg-header">
+            <div class="stats-reg-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#004C97" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Распределение ЗИ по дате регистрации
+            </div>
+            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+              <div class="toggle-group" id="statsRegDataToggleWrap" style="font-size:11px">
+                <button class="toggle-btn active" onclick="setStatsRegDataMode('reg',this)" style="padding:4px 10px;font-size:11px">Регистрация</button>
+                <button class="toggle-btn" onclick="setStatsRegDataMode('close',this)" style="padding:4px 10px;font-size:11px">Закрытие</button>
+              </div>
+              <div class="toggle-group" id="statsRegToggle" style="font-size:11px">
+                <button class="toggle-btn active" onclick="setStatsRegMode('year',this)" style="padding:4px 10px;font-size:11px">Год</button>
+                <button class="toggle-btn" onclick="setStatsRegMode('quarter',this)" style="padding:4px 10px;font-size:11px">Квартал</button>
+                <button class="toggle-btn" onclick="setStatsRegMode('month',this)" style="padding:4px 10px;font-size:11px">Месяц</button>
+              </div>
+            </div>
           </div>
-          <div class="toggle-group" id="statsRegToggle" style="font-size:11px">
-            <button class="toggle-btn active" onclick="setStatsRegMode('year',this)" style="padding:4px 10px;font-size:11px">Год</button>
-            <button class="toggle-btn" onclick="setStatsRegMode('quarter',this)" style="padding:4px 10px;font-size:11px">Квартал</button>
-            <button class="toggle-btn" onclick="setStatsRegMode('month',this)" style="padding:4px 10px;font-size:11px">Месяц</button>
-          </div>
+          <div class="stats-reg-chart" id="statsRegDistrib" style="flex:1"></div>
         </div>
-        <div class="stats-reg-chart" id="statsRegDistrib"></div>
       </div>
 
       <!-- PAGE 2 in print: breakdown -->
@@ -936,7 +948,7 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
                 Статистика по сервисным линиям
               </div>
-              <div style="display:flex;align-items:center;gap:10px"><div class="section-meta" id="slTableCount"></div><button class="section-collapse-btn no-print" onclick="event.stopPropagation(); toggleSection(this)" title="Свернуть/развернуть"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button></div></div>
+              <div style="display:flex;align-items:center;gap:10px"><div class="section-meta" id="slTableCount"></div><div class="tbl-ctrl-group no-print"><div class="col-picker-wrap"><button class="tbl-ctrl-btn" onclick="toggleColPicker('slTableBody',this)" title="Настройка столбцов"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="6" height="18" rx="1"/><rect x="15" y="3" width="6" height="18" rx="1"/></svg>Столбцы</button></div><button class="tbl-ctrl-btn" onclick="downloadTableExcel('slTableBody','По СЛ','Статистика_СЛ')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Excel</button></div><button class="section-collapse-btn no-print" onclick="event.stopPropagation(); toggleSection(this)" title="Свернуть/развернуть"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button></div></div>
             <div style="overflow-x:auto">
               <table>
                 <thead id="slTableHead"><tr>
@@ -956,7 +968,7 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A7A4A" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
                 Статистика по бизнес-направлениям
               </div>
-              <div style="display:flex;align-items:center;gap:10px"><div class="section-meta" id="bdTableCount"></div><button class="section-collapse-btn no-print" onclick="event.stopPropagation(); toggleSection(this)" title="Свернуть/развернуть"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button></div></div>
+              <div style="display:flex;align-items:center;gap:10px"><div class="section-meta" id="bdTableCount"></div><div class="tbl-ctrl-group no-print"><div class="col-picker-wrap"><button class="tbl-ctrl-btn" onclick="toggleColPicker('bdTableBody',this)" title="Настройка столбцов"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="6" height="18" rx="1"/><rect x="15" y="3" width="6" height="18" rx="1"/></svg>Столбцы</button></div><button class="tbl-ctrl-btn" onclick="downloadTableExcel('bdTableBody','По БН','Статистика_БН')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Excel</button></div><button class="section-collapse-btn no-print" onclick="event.stopPropagation(); toggleSection(this)" title="Свернуть/развернуть"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button></div></div>
             <div style="overflow-x:auto">
               <table>
                 <thead id="bdTableHead"><tr>
@@ -974,13 +986,13 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
       </div>
 
       <!-- KE breakdown — full width -->
-      <div class="section ke-section" style="margin-bottom:20px">
+      <div class="section ke-section collapsed" style="margin-bottom:20px">
         <div class="section-header">
           <div class="section-title">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
             Статистика по КЕ
           </div>
-          <div style="display:flex;align-items:center;gap:10px"><div class="section-meta" id="keTableCount"></div><button class="section-collapse-btn no-print" onclick="event.stopPropagation(); toggleSection(this)" title="Свернуть/развернуть"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button></div></div>
+          <div style="display:flex;align-items:center;gap:10px"><div class="section-meta" id="keTableCount"></div><div class="tbl-ctrl-group no-print"><div class="col-picker-wrap"><button class="tbl-ctrl-btn" onclick="toggleColPicker('keTableBody',this)" title="Настройка столбцов"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="6" height="18" rx="1"/><rect x="15" y="3" width="6" height="18" rx="1"/></svg>Столбцы</button></div><button class="tbl-ctrl-btn" onclick="downloadTableExcel('keTableBody','По КЕ','Статистика_КЕ')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Excel</button></div><button class="section-collapse-btn no-print" onclick="event.stopPropagation(); toggleSection(this)" title="Свернуть/развернуть"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button></div></div>
         <div style="overflow-x:auto">
           <table>
             <thead><tr>
@@ -1078,6 +1090,7 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
               <button class="toggle-btn active" id="trendBySL" onclick="setTrendGroup('sl')">По СЛ</button>
               <button class="toggle-btn" id="trendByBD" onclick="setTrendGroup('bd')">По БН</button>
               <button class="toggle-btn" id="trendByKE" onclick="setTrendGroup('ke')">По КЕ</button>
+              <button class="toggle-btn" id="trendByCOORD" onclick="setTrendGroup('coord')">По координаторам</button>
             </div>
             <!-- X axis granularity -->
             <div class="toggle-group">
@@ -1505,6 +1518,7 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
                 <th onclick="sortDoc('Short','kind')">Вид <span class="sort-icon"></span></th>
                 <th onclick="sortDoc('Short','dateApprove')">Дата посл. согласования <span class="sort-icon"></span></th>
                 <th onclick="sortDoc('Short','colQ')">Срок выполнения РЗ <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Short','colR')">Начало статуса <span class="sort-icon"></span></th>
                 <th onclick="sortDoc('Short','daysLeft')">Просрочка <span class="sort-icon desc"></span></th>
               </tr></thead>
               <tbody id="docTableBodyShort"></tbody>
@@ -1546,6 +1560,7 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
                 <th onclick="sortDoc('Mid','kind')">Вид <span class="sort-icon"></span></th>
                 <th onclick="sortDoc('Mid','dateApprove')">Дата посл. согласования <span class="sort-icon"></span></th>
                 <th onclick="sortDoc('Mid','colQ')">Срок выполнения РЗ <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Mid','colR')">Начало статуса <span class="sort-icon"></span></th>
                 <th onclick="sortDoc('Mid','daysLeft')">Просрочка <span class="sort-icon desc"></span></th>
               </tr></thead>
               <tbody id="docTableBodyMid"></tbody>
@@ -1587,6 +1602,7 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
                 <th onclick="sortDoc('Long','kind')">Вид <span class="sort-icon"></span></th>
                 <th onclick="sortDoc('Long','dateApprove')">Дата посл. согласования <span class="sort-icon"></span></th>
                 <th onclick="sortDoc('Long','colQ')">Срок выполнения РЗ <span class="sort-icon"></span></th>
+                <th onclick="sortDoc('Long','colR')">Начало статуса <span class="sort-icon"></span></th>
                 <th onclick="sortDoc('Long','daysLeft')">Просрочка <span class="sort-icon desc"></span></th>
               </tr></thead>
               <tbody id="docTableBodyLong"></tbody>
@@ -2238,27 +2254,46 @@ function updatePrintParams() {
 
 // ====== CARDS ======
 function renderCards(stats) {
-  const totalZI=filteredData.length;
-  const overdueZI=filteredData.filter(r=>r.days!==null&&r.days>params.days).length;
+  // "Общая информация" зависит от слайдеров "Мин. кол-во ЗИ у координатора" (minZI)
+  // и "Порог просроченных ЗИ (%)" (threshold).
+  // Активные координаторы — те, у кого ЗИ >= minZI (status !== 'excluded').
+  const activeCoordNames=new Set(stats.filter(s=>s.status!=='excluded').map(s=>s.name));
+  // Координаторы, помеченные порогом просрочки (критичные + зона риска).
+  const flaggedCoordNames=new Set(stats.filter(s=>s.status==='critical'||s.status==='risk').map(s=>s.name));
+  // ЗИ активных координаторов — база для "Всего ЗИ" (зависит от minZI).
+  const activeRows=filteredData.filter(r=>activeCoordNames.has(r.coordinator));
+  const totalZI=activeRows.length;
+  // Просроченные ЗИ у координаторов сверх порога (зависит от minZI и threshold).
+  const overdueRows=activeRows.filter(r=>flaggedCoordNames.has(r.coordinator)&&r.days!==null&&r.days>params.days);
+  const overdueZI=overdueRows.length;
   const overduePct=totalZI>0?((overdueZI/totalZI)*100).toFixed(1):'0.0';
-  const odm=getOverdueDaysMetrics();
+  const odm=getOverdueDaysMetrics(overdueRows);
   const critical=stats.filter(s=>s.status==='critical').length;
   const risk=stats.filter(s=>s.status==='risk').length;
-  const coordTotal=stats.length;
+  const okCount=stats.filter(s=>s.status==='ok').length;
+  const excluded=stats.filter(s=>s.status==='excluded').length;
+  const coordTotal=stats.length; // все координаторы
+  const coordActive=critical+risk+okCount; // только с достаточным кол-вом ЗИ
   const riskLow=(params.threshold/2).toFixed(0);
   const riskHigh=params.threshold-1;
   const grid=document.getElementById('cardsGrid');
   grid.innerHTML='';
+  grid.style.display='none'; // cardsGrid пуст — скрываем
+  // Используем statsCardsCol для карточек Общая инфо + Координаторы
+  const col=document.getElementById('statsCardsCol');
+  if(col) col.innerHTML='';
+  const layout=document.getElementById('statsLayoutWrap');
+  if(layout) layout.style.display='flex';
   const cards=[
     { _info: true, totalZI, overduePct, overdueZI, coordTotal, odm },
-    { _distrib: true, critical, risk, ok: coordTotal - critical - risk }
+    { _distrib: true, critical, risk, ok: okCount, excluded, coordActive }
   ];
   cards.forEach((c,i)=>{
     const div=document.createElement('div');
     div.style.animationDelay=(i*0.07)+'s';
     if (c._info) {
       div.className='card card-info animate-in';
-      div.style.gridColumn='span 2';
+      // full width inside flex column
       div.innerHTML=`
         <div class="distrib-header">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#004C97" stroke-width="2" style="flex-shrink:0">
@@ -2273,13 +2308,13 @@ function renderCards(stats) {
           <div class="info-metric">
             <div class="info-val">${c.totalZI}</div>
             <div class="info-label">Всего ЗИ</div>
-            <div class="card-badge badge-blue">${new Set(filteredData.map(r=>r.ke).filter(Boolean)).size} ИТ-систем</div>
+            <div class="card-badge badge-blue">${new Set(activeRows.map(r=>r.ke).filter(Boolean)).size} ИТ-систем</div>
           </div>
           <div class="info-sep"></div>
           <div class="info-metric">
             <div class="info-val" style="color:#dc2626">${c.overduePct}%</div>
             <div class="info-label">С просрочкой</div>
-            <div class="card-badge badge-red">${c.overdueZI} ЗИ просроч.</div>
+            <div class="card-badge badge-red">${c.overdueZI} ЗИ</div>
           </div>
           <div class="info-sep"></div>
           <div class="info-metric">
@@ -2303,8 +2338,8 @@ function renderCards(stats) {
     } else if (c._distrib) {
       // Объединённая карточка "Распределение координаторов ЗИ"
       div.className='card card-distrib animate-in';
-      div.style.gridColumn = 'span 2';
-      const total = c.critical + c.risk + c.ok;
+      // full width inside flex column
+      const total = c.coordActive; // только активные (не excluded)
       const pCrit = total ? Math.round(c.critical/total*100) : 0;
       const pRisk = total ? Math.round(c.risk/total*100) : 0;
       const pOk   = total ? Math.round(c.ok/total*100) : 0;
@@ -2341,8 +2376,12 @@ function renderCards(stats) {
       const mc=metrics.length===1?'card-metrics single-metric':'card-metrics';
       div.innerHTML=`<div class="card-icon">${c.icon}</div><div class="${mc}">${metrics.map(m=>`<div class="card-metric"><div class="card-value">${m.val}</div><div class="card-label">${m.label}</div><div class="card-badge ${m.badgeCls}">${m.badge}</div></div>`).join('')}</div>`;
     }
-    grid.appendChild(div);
+    const target = (c._info || c._distrib) ? (document.getElementById('statsCardsCol') || grid) : grid;
+    target.appendChild(div);
   });
+  // Колонка карточек занимает полную ширину (совпадает с блоком распределения по дате)
+  const col2 = document.getElementById('statsCardsCol');
+  if (col2) col2.style.width = '100%';
 }
 
 // ====== TABLE ======
@@ -2812,7 +2851,7 @@ function renderCmpTable() {
 }
 
 // ====== TREND CHART (динамика) ======
-let trendGroup = 'sl';   // 'sl' | 'bd' | 'ke'
+let trendGroup = 'sl';   // 'sl' | 'bd' | 'ke' | 'coord'
 let trendXMode = 'month'; // 'month' | 'quarter' | 'year'
 let trendMetric = 'pct';  // 'pct' | 'count' | 'mean' | 'median'
 let trendScope = 'all';   // 'all' | 'overdue' — база для среднее/медиана
@@ -2826,6 +2865,8 @@ const TREND_PALETTE = [
 function setTrendGroup(g) {
   trendGroup = g;
   ['sl','bd','ke'].forEach(x => document.getElementById('trendBy'+x.toUpperCase()).classList.toggle('active', x===g));
+  const coordBtn = document.getElementById('trendByCOORD');
+  if (coordBtn) coordBtn.classList.toggle('active', g==='coord');
   renderTrendChart();
 }
 function setTrendX(x) {
@@ -2870,8 +2911,9 @@ function formatTrendKey(k) {
 }
 
 function getTrendGroupKey(r) {
-  if (trendGroup==='ke') return r.ke || '(не указано)';
-  if (trendGroup==='bd') return r.businessDir || '(не указано)';
+  if (trendGroup==='ke')    return r.ke || '(не указано)';
+  if (trendGroup==='bd')    return r.businessDir || '(не указано)';
+  if (trendGroup==='coord') return r.coordinator || '(не указано)';
   return r.serviceLine || '(не указано)';
 }
 
@@ -3075,7 +3117,13 @@ function renderTrendChart() {
       if (best) {
         const mn={pct:'%',count:'',mean:' дн.',median:' дн.'};
         const suffix=mn[trendMetric]||'';
-        tooltip.innerHTML=`<div style="font-weight:700;color:${best.color};margin-bottom:3px">${escHtml(best.g)}</div><div style="color:#64748b;margin-bottom:2px">${escHtml(formatTrendKey(best.p))}</div><div style="font-size:15px;font-weight:800;color:${best.color}">${best.v.toFixed(1)}${suffix}</div>`;
+        const bucket = seriesMap[best.g][best.p];
+        const totalInBucket = bucket ? bucket.total : 0;
+        const overdueInBucket = bucket ? bucket.overdue : 0;
+        const countLine = trendMetric === 'pct'
+          ? `<div style="color:#64748b;font-size:11px;margin-top:2px">Всего ЗИ: ${totalInBucket} / Просроч.: ${overdueInBucket}</div>`
+          : `<div style="color:#64748b;font-size:11px;margin-top:2px">Всего ЗИ: ${totalInBucket}</div>`;
+        tooltip.innerHTML=`<div style="font-weight:700;color:${best.color};margin-bottom:3px">${escHtml(best.g)}</div><div style="color:#64748b;margin-bottom:2px">${escHtml(formatTrendKey(best.p))}</div><div style="font-size:15px;font-weight:800;color:${best.color}">${best.v.toFixed(1)}${suffix}</div>${countLine}`;
         tooltip.style.display='block';
         // position:fixed → координаты вьюпорта, чтобы тултип не обрезался overflow родителей
         const tw = tooltip.offsetWidth || 180, th = tooltip.offsetHeight || 60;
@@ -3278,6 +3326,7 @@ function processHungFile(wb) {
 // ── HUNG: распределение по дате регистрации + топ-разбивка ──
 let hungRegMode = 'year';        // 'year' | 'quarter' | 'month'
 let statsRegMode = 'year';       // 'year' | 'quarter' | 'month'
+let statsRegDataMode = 'reg';    // 'reg' | 'close'
 let hungTopDim  = 'coordinator';  // 'coordinator' | 'sl' | 'bd' | 'ke'
 let _hungFiltered = [];           // последний отфильтрованный набор подвисших
 
@@ -3305,8 +3354,21 @@ function setHungRegMode(mode, btn) {
 
 function setStatsRegMode(mode, btn) {
   statsRegMode = mode;
-  document.querySelectorAll('#statsRegToggle .toggle-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
+  document.querySelectorAll('#statsRegToggle .toggle-btn, #statsRegToggle2 .toggle-btn').forEach(b => b.classList.remove('active'));
+  // activate matching buttons in both toggle groups
+  document.querySelectorAll('#statsRegToggle .toggle-btn, #statsRegToggle2 .toggle-btn').forEach(b => {
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + mode + "'")) b.classList.add('active');
+  });
+  renderStatsRegDistrib();
+}
+
+function setStatsRegDataMode(mode, btn) {
+  statsRegDataMode = mode;
+  // Sync all Регистрация/Закрытие toggle groups across the page
+  document.querySelectorAll('#statsRegDataToggle .toggle-btn, #statsRegDataToggleWrap .toggle-btn').forEach(b => {
+    const isMatch = b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + mode + "'");
+    b.classList.toggle('active', isMatch);
+  });
   renderStatsRegDistrib();
 }
 
@@ -3314,12 +3376,28 @@ function renderStatsRegDistrib() {
   const wrap = document.getElementById('statsRegWrap');
   const el   = document.getElementById('statsRegDistrib');
   if (!wrap || !el) return;
-  if (!filteredData || !filteredData.length) { wrap.style.display = 'none'; return; }
-  wrap.style.display = '';
+  // Update block title to reflect current data mode
+  const titleTextNode = wrap.querySelector('.stats-reg-title');
+  if (titleTextNode) {
+    const textSpan = titleTextNode.childNodes[titleTextNode.childNodes.length - 1];
+    if (textSpan && textSpan.nodeType === 3) {
+      textSpan.textContent = statsRegDataMode === 'close'
+        ? ' Распределение ЗИ по дате закрытия'
+        : ' Распределение ЗИ по дате регистрации';
+    }
+  }
+  const layout = document.getElementById('statsLayoutWrap');
+  if (!filteredData || !filteredData.length) {
+    if (layout) layout.style.display = 'none';
+    return;
+  }
+  if (layout) layout.style.display = 'flex';
+  wrap.style.removeProperty('display'); // statsRegWrap inside layout stays flex
   const buckets = new Map();
   let noDate = 0;
   filteredData.forEach(r => {
-    const k = regPeriodKey(r.dateReg, statsRegMode);
+    const dateField = statsRegDataMode === 'close' ? r.dateClose : r.dateReg;
+    const k = regPeriodKey(dateField, statsRegMode);
     if (k === '(не указано)') { noDate++; return; }
     buckets.set(k, (buckets.get(k) || 0) + 1);
   });
@@ -3328,7 +3406,7 @@ function renderStatsRegDistrib() {
   // заполняем все месяцы в диапазоне от min до max dateReg (нулевые включительно).
   let keys;
   if (statsRegMode === 'month' && msSelected['REGMONTH'].size === 0) {
-    const dates = filteredData.map(r => r.dateReg).filter(d => d instanceof Date && !isNaN(d));
+    const dates = filteredData.map(r => statsRegDataMode === 'close' ? r.dateClose : r.dateReg).filter(d => d instanceof Date && !isNaN(d));
     if (dates.length) {
       let minD = dates.reduce((a,b) => a < b ? a : b);
       let maxD = dates.reduce((a,b) => a > b ? a : b);
@@ -3347,20 +3425,23 @@ function renderStatsRegDistrib() {
   }
 
   if (!keys.length) {
-    el.innerHTML = `<div class="hung-empty">Нет данных о дате регистрации${noDate ? ` (${noDate} ЗИ без даты)` : ''}</div>`;
+    const dateTypeName = statsRegDataMode === 'close' ? 'закрытия' : 'регистрации';
+    el.innerHTML = `<div class="empty-state" style="padding:20px 0"><div class="empty-title">Нет данных</div><div>${noDate ? noDate + ' ЗИ без даты ' + dateTypeName : 'Нет данных о дате ' + dateTypeName}</div></div>`;
     return;
   }
   const rows = keys.map(k => [k, buckets.get(k) || 0]);
   const maxV = Math.max(...rows.map(r => r[1]), 1);
   const bars = rows.map(([k,v]) => {
-    const h = v > 0 ? Math.max(8, Math.round((v/maxV)*100)) : 0;
+    const h = v > 0 ? Math.max(8, Math.round((v/maxV)*85)) : 0;
     const barStyle = v > 0
       ? `height:${h}%;background:linear-gradient(180deg,#2563eb,#60a5fa)`
       : `height:3px;background:var(--gray-200)`;
     const valLabel = v > 0 ? `<div class="rd-bar-val">${v}</div>` : `<div class="rd-bar-val" style="color:var(--gray-400)">0</div>`;
     return `<div class="rd-bar-wrap" title="${escAttr(regPeriodLabel(k,statsRegMode))}: ${v}">
-      ${valLabel}
-      <div class="rd-bar" style="${barStyle}"></div>
+      <div class="rd-bar-track">
+        ${valLabel}
+        <div class="rd-bar" style="${barStyle}"></div>
+      </div>
       <div class="rd-bar-lbl">${escHtml(regPeriodLabel(k,statsRegMode))}</div>
     </div>`;
   }).join('');
@@ -3407,7 +3488,7 @@ function renderHungRegDistrib() {
   }
 
   if (!keys.length) {
-    el.innerHTML = `<div class="hung-empty">Нет данных о дате регистрации${noDate ? ` (значение отсутствует у ${noDate} ЗИ)` : ''}</div>`;
+    el.innerHTML = `<div class="empty-state" style="padding:20px 0"><div class="empty-title">Нет данных</div><div>${noDate ? 'Значение отсутствует у ' + noDate + ' ЗИ' : 'Нет данных о дате регистрации'}</div></div>`;
     syncRdChartHeight();
     return;
   }
@@ -3440,7 +3521,7 @@ function renderHungTopBreakdown() {
     buckets.set(k, (buckets.get(k) || 0) + 1);
   });
   const rows = [...buckets.entries()].sort((a,b) => b[1] - a[1]).slice(0, 10);
-  if (!rows.length) { el.innerHTML = `<div class="hung-empty">Нет данных</div>`; syncRdChartHeight(); return; }
+  if (!rows.length) { el.innerHTML = `<div class="empty-state" style="padding:20px 0"><div class="empty-title">Нет данных</div><div>Попробуйте изменить фильтры</div></div>`; syncRdChartHeight(); return; }
   const maxV = rows[0][1];
   el.innerHTML = rows.map(([k,v]) => {
     const w = Math.max(2, Math.round(v / maxV * 100));
@@ -3719,7 +3800,7 @@ function renderHungTable(block, rows, bodyId) {
 
   const body = document.getElementById(bodyId);
   if (!sorted.length) {
-    body.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--gray-400)">Нет данных по заданным условиям</td></tr>`;
+    body.innerHTML = `<tr><td colspan="10"><div class=\"empty-state\"><div class=\"empty-title\">Нет данных</div><div>Попробуйте изменить фильтры</div></div></td></tr>`;
   } else {
     body.innerHTML = sorted.map(makeRow).join('');
   }
@@ -3798,6 +3879,8 @@ document.getElementById('fileInput2').addEventListener('change', async function(
   const file = e.target.files[0]; if (!file) return;
   try {
     showNotif('Загрузка файла подвисших...');
+    // Сбрасываем кешированные col-picker dropdown'ы (могут содержать старые столбцы)
+    document.querySelectorAll('.col-picker-dropdown[id^="colPicker_doc"]').forEach(el => el.remove());
     const wb = await readXlsxWorkbook(file);
     processHungFile(wb);
     loadedHung = true;
@@ -3829,10 +3912,10 @@ const TABLE_COLS = {
   hungApprovedBody:  [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата согласования',v:true},{id:'overdueDays',label:'Дней просрочки',v:true},{id:'manager',label:'Лин. рук. координатора',v:false}],
   hungRequestedBody: [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата согласования',v:true},{id:'deadline',label:'Срок согласования',v:true},{id:'overdueDays',label:'Дней просрочки',v:true},{id:'manager',label:'Лин. рук. координатора',v:false}],
   hungRejectedBody:  [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата согласования',v:true},{id:'daysSince',label:'Дней с отклонения',v:true},{id:'manager',label:'Лин. рук. координатора',v:false}],
-  docTableBody:      [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'daysLeft',label:'Просрочка',v:true}],
-  docTableBodyShort: [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'daysLeft',label:'Просрочка',v:true}],
-  docTableBodyMid:   [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'daysLeft',label:'Просрочка',v:true}],
-  docTableBodyLong:  [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'daysLeft',label:'Просрочка',v:true}],
+  docTableBody:      [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'colR',label:'Начало статуса',v:true},{id:'daysLeft',label:'Просрочка',v:true}],
+  docTableBodyShort: [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'colR',label:'Начало статуса',v:true},{id:'daysLeft',label:'Просрочка',v:true}],
+  docTableBodyMid:   [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'colR',label:'Начало статуса',v:true},{id:'daysLeft',label:'Просрочка',v:true}],
+  docTableBodyLong:  [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'colR',label:'Начало статуса',v:true},{id:'daysLeft',label:'Просрочка',v:true}],
 };
 
 function toggleColPicker(tableId, btn) {
@@ -4185,9 +4268,11 @@ function renderDocPage() {
       const q = new Date(r.colQ); q.setHours(0,0,0,0);
       return q >= today ? countWorkDays(today, q) : -countWorkDays(q, today);
     }
-    // colQ empty: overdue starts at colR + 1 working day
-    if (!r.dateApprove || !(r.dateApprove instanceof Date) || isNaN(r.dateApprove)) return null;
-    const overdueStart = addWorkDays(r.dateApprove, thresholdDays + 1);
+    // colQ empty: overdue starts at colR (Начало статуса) + thresholdDays + 1 working day
+    const baseDate = (r.colR instanceof Date && !isNaN(r.colR)) ? r.colR :
+                     (r.dateApprove instanceof Date && !isNaN(r.dateApprove)) ? r.dateApprove : null;
+    if (!baseDate) return null;
+    const overdueStart = addWorkDays(baseDate, thresholdDays + 1);
     if (!overdueStart) return null;
     overdueStart.setHours(0,0,0,0);
     // Only overdue if today > overdueStart
@@ -4316,6 +4401,14 @@ function renderDocPage() {
     { suffix: 'Long',  filter: r => { const v = parseColR(r); return v !== null && v > 365; } },
   ];
 
+  // Format colR: if it's a Date, show as date; if number, show as number (days)
+  function fmtColR(v) {
+    if (!v && v !== 0) return '—';
+    if (v instanceof Date && !isNaN(v)) return v.toLocaleDateString('ru-RU');
+    if (typeof v === 'number') return v.toLocaleString('ru-RU');
+    return String(v);
+  }
+
   function renderDocRowsToTable(rows, suffix) {
     const s = docSortStates[suffix];
     const sorted = [...rows].sort((a, b) => {
@@ -4328,7 +4421,7 @@ function renderDocPage() {
     const body = document.getElementById('docTableBody' + suffix);
     if (!body) return;
     if (!sorted.length) {
-      body.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--gray-400)">Нет ЗИ</td></tr>`;
+      body.innerHTML = `<tr><td colspan="11"><div class=\"empty-state\"><div class=\"empty-title\">Нет данных</div><div>Попробуйте изменить фильтры или порог</div></div></td></tr>`;
     } else {
       body.innerHTML = sorted.map(r => {
         const dc = dayColor(r.daysLeft);
@@ -4346,6 +4439,7 @@ function renderDocPage() {
           <td>${escHtml(r.kind || '')}</td>
           <td style="white-space:nowrap">${fmt(r.dateApprove)}</td>
           <td style="white-space:nowrap">${fmt(r.colQ)}</td>
+          <td style="white-space:nowrap">${fmtColR(r.colR)}</td>
           <td class="num-cell" style="color:${dc}">${dayLabel}</td>
         </tr>`;
       }).join('');
@@ -4393,7 +4487,8 @@ function renderDocRegDistrib() {
     keys = [...buckets.keys()].sort((a,b) => a.localeCompare(b));
   }
   if (!keys.length) {
-    el.innerHTML = `<div class="hung-empty">Нет данных о дате регистрации${noDate ? ` (${noDate} ЗИ без даты)` : ''}</div>`;
+    const dateTypeName = statsRegDataMode === 'close' ? 'закрытия' : 'регистрации';
+    el.innerHTML = `<div class="empty-state" style="padding:20px 0"><div class="empty-title">Нет данных</div><div>${noDate ? noDate + ' ЗИ без даты ' + dateTypeName : 'Нет данных о дате ' + dateTypeName}</div></div>`;
     syncDocChartHeight();
     return;
   }
@@ -4424,7 +4519,7 @@ function renderDocTopBreakdown() {
     buckets.set(k, (buckets.get(k) || 0) + 1);
   });
   const rows = [...buckets.entries()].sort((a,b) => b[1]-a[1]).slice(0,10);
-  if (!rows.length) { el.innerHTML = `<div class="hung-empty">Нет данных</div>`; syncDocChartHeight(); return; }
+  if (!rows.length) { el.innerHTML = `<div class="empty-state" style="padding:20px 0"><div class="empty-title">Нет данных</div><div>Попробуйте изменить фильтры</div></div>`; syncDocChartHeight(); return; }
   const maxV = rows[0][1];
   el.innerHTML = rows.map(([k,v]) => {
     const w = Math.max(2, Math.round(v/maxV*100));
