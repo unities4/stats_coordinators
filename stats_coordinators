@@ -1520,6 +1520,7 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
                 <th onclick="sortDoc('Short','colQ')">Срок выполнения РЗ <span class="sort-icon"></span></th>
                 <th onclick="sortDoc('Short','colR')">Начало статуса <span class="sort-icon"></span></th>
                 <th onclick="sortDoc('Short','daysLeft')">Просрочка <span class="sort-icon desc"></span></th>
+                <th onclick="sortDoc('Short','daysInStatus')">Дней в статусе <span class="sort-icon"></span></th>
               </tr></thead>
               <tbody id="docTableBodyShort"></tbody>
             </table>
@@ -1562,6 +1563,7 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
                 <th onclick="sortDoc('Mid','colQ')">Срок выполнения РЗ <span class="sort-icon"></span></th>
                 <th onclick="sortDoc('Mid','colR')">Начало статуса <span class="sort-icon"></span></th>
                 <th onclick="sortDoc('Mid','daysLeft')">Просрочка <span class="sort-icon desc"></span></th>
+                <th onclick="sortDoc('Mid','daysInStatus')">Дней в статусе <span class="sort-icon"></span></th>
               </tr></thead>
               <tbody id="docTableBodyMid"></tbody>
             </table>
@@ -1604,6 +1606,7 @@ td.num-cell { text-align:center; font-family:'Montserrat','Segoe UI',Arial,sans-
                 <th onclick="sortDoc('Long','colQ')">Срок выполнения РЗ <span class="sort-icon"></span></th>
                 <th onclick="sortDoc('Long','colR')">Начало статуса <span class="sort-icon"></span></th>
                 <th onclick="sortDoc('Long','daysLeft')">Просрочка <span class="sort-icon desc"></span></th>
+                <th onclick="sortDoc('Long','daysInStatus')">Дней в статусе <span class="sort-icon"></span></th>
               </tr></thead>
               <tbody id="docTableBodyLong"></tbody>
             </table>
@@ -3912,10 +3915,10 @@ const TABLE_COLS = {
   hungApprovedBody:  [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата согласования',v:true},{id:'overdueDays',label:'Дней просрочки',v:true},{id:'manager',label:'Лин. рук. координатора',v:false}],
   hungRequestedBody: [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата согласования',v:true},{id:'deadline',label:'Срок согласования',v:true},{id:'overdueDays',label:'Дней просрочки',v:true},{id:'manager',label:'Лин. рук. координатора',v:false}],
   hungRejectedBody:  [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата согласования',v:true},{id:'daysSince',label:'Дней с отклонения',v:true},{id:'manager',label:'Лин. рук. координатора',v:false}],
-  docTableBody:      [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'colR',label:'Начало статуса',v:true},{id:'daysLeft',label:'Просрочка',v:true}],
-  docTableBodyShort: [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'colR',label:'Начало статуса',v:true},{id:'daysLeft',label:'Просрочка',v:true}],
-  docTableBodyMid:   [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'colR',label:'Начало статуса',v:true},{id:'daysLeft',label:'Просрочка',v:true}],
-  docTableBodyLong:  [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:true},{id:'bd',label:'БН',v:true},{id:'category',label:'Категория',v:true},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'colR',label:'Начало статуса',v:true},{id:'daysLeft',label:'Просрочка',v:true}],
+  docTableBody:      [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:false},{id:'bd',label:'БН',v:false},{id:'category',label:'Категория',v:false},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'colR',label:'Начало статуса',v:true},{id:'daysLeft',label:'Просрочка',v:true},{id:'daysInStatus',label:'Дней в статусе',v:true}],
+  docTableBodyShort: [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:false},{id:'bd',label:'БН',v:false},{id:'category',label:'Категория',v:false},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'colR',label:'Начало статуса',v:true},{id:'daysLeft',label:'Просрочка',v:true},{id:'daysInStatus',label:'Дней в статусе',v:true}],
+  docTableBodyMid:   [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:false},{id:'bd',label:'БН',v:false},{id:'category',label:'Категория',v:false},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'colR',label:'Начало статуса',v:true},{id:'daysLeft',label:'Просрочка',v:true},{id:'daysInStatus',label:'Дней в статусе',v:true}],
+  docTableBodyLong:  [{id:'num',label:'Номер ЗИ',v:true},{id:'ke',label:'КЕ',v:true},{id:'coordinator',label:'Координатор',v:true},{id:'sl',label:'СЛ',v:false},{id:'bd',label:'БН',v:false},{id:'category',label:'Категория',v:false},{id:'kind',label:'Вид',v:true},{id:'dateApprove',label:'Дата посл. согласования',v:false},{id:'colQ',label:'Срок выполнения РЗ',v:true},{id:'colR',label:'Начало статуса',v:true},{id:'daysLeft',label:'Просрочка',v:true},{id:'daysInStatus',label:'Дней в статусе',v:true}],
 };
 
 function toggleColPicker(tableId, btn) {
@@ -4208,7 +4211,7 @@ function updateDocSortIndicator() {
     });
     // Sort icon on the active column (by position in header)
     const headers = [...tbl.querySelectorAll('thead th')];
-    const fieldOrder = ['num','ke','coordinator','sl','bd','category','kind','dateApprove','colQ','daysLeft'];
+    const fieldOrder = ['num','ke','coordinator','sl','bd','category','kind','dateApprove','colQ','colR','daysLeft','daysInStatus'];
     const idx = fieldOrder.indexOf(s.field);
     if (idx >= 0 && headers[idx]) {
       headers[idx].classList.add('sorted');
@@ -4244,17 +4247,16 @@ function renderDocPage() {
   // Deadline = today + thresholdDays working days
   const deadlineDate = addWorkDays(today, thresholdDays);
 
-  // Helper: parse colR to a numeric "days" value (calendar days, not working)
-  // colR can be a number (already days) or a Date
+  // Helper: parse colR ("Начало статуса") → количество КАЛЕНДАРНЫХ дней в текущем статусе
+  // colR может быть датой начала статуса (тогда дней = сегодня − дата) или уже числом дней
   function parseColR(r) {
     const v = r.colR;
     if (v === null || v === undefined || v === '') return null;
-    if (typeof v === 'number') return v;
     if (v instanceof Date && !isNaN(v)) {
-      // If it's a date, treat as Excel serial → use as-is numeric days since epoch not useful
-      // Actually colR is expected to be a plain number of days. If it came as Date, convert back.
-      return Math.round((v - new Date(1899, 11, 30)) / 86400000);
+      const d = new Date(v); d.setHours(0, 0, 0, 0);
+      return Math.max(0, Math.round((today - d) / 86400000)); // календарные дни в статусе
     }
+    if (typeof v === 'number') return v; // уже число дней
     const n = parseFloat(v);
     return isNaN(n) ? null : n;
   }
@@ -4297,7 +4299,7 @@ function renderDocPage() {
     })
     .map(r => {
       const dl = computeDaysLeft(r);
-      return { ...r, daysLeft: dl !== null ? dl : 0 };
+      return { ...r, daysLeft: dl !== null ? dl : 0, daysInStatus: parseColR(r) };
     });
 
   _docFiltered = docRows;
@@ -4421,7 +4423,7 @@ function renderDocPage() {
     const body = document.getElementById('docTableBody' + suffix);
     if (!body) return;
     if (!sorted.length) {
-      body.innerHTML = `<tr><td colspan="11"><div class=\"empty-state\"><div class=\"empty-title\">Нет данных</div><div>Попробуйте изменить фильтры или порог</div></div></td></tr>`;
+      body.innerHTML = `<tr><td colspan="12"><div class=\"empty-state\"><div class=\"empty-title\">Нет данных</div><div>Попробуйте изменить фильтры или порог</div></div></td></tr>`;
     } else {
       body.innerHTML = sorted.map(r => {
         const dc = dayColor(r.daysLeft);
@@ -4441,6 +4443,7 @@ function renderDocPage() {
           <td style="white-space:nowrap">${fmt(r.colQ)}</td>
           <td style="white-space:nowrap">${fmtColR(r.colR)}</td>
           <td class="num-cell" style="color:${dc}">${dayLabel}</td>
+          <td class="num-cell" style="white-space:nowrap">${r.daysInStatus !== null && r.daysInStatus !== undefined ? r.daysInStatus.toLocaleString('ru-RU') + ' кал. дн.' : '—'}</td>
         </tr>`;
       }).join('');
     }
