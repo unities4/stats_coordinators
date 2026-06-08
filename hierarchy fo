@@ -64,7 +64,13 @@
   .card-b{padding:14px 16px}
 
   /* ===== TREE (top-down org-chart) ===== */
-  #treeBox{padding:22px 18px;overflow:auto;max-height:72vh}
+  #treeBox{padding:0;overflow:hidden;max-height:72vh;position:relative;cursor:grab;user-select:none}
+  #treeBox.panning{cursor:grabbing}
+  #treeViewport{padding:22px 18px;display:inline-block;min-width:100%;transform-origin:0 0;transition:none}
+  .zoom-controls{position:absolute;bottom:10px;right:10px;display:flex;flex-direction:column;gap:4px;z-index:10}
+  .zoom-controls button{width:30px;height:30px;border:1px solid var(--line-2);border-radius:7px;background:#fff;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);box-shadow:var(--shadow)}
+  .zoom-controls button:hover{border-color:var(--brand-l);color:var(--brand)}
+  .zoom-level{font-size:11px;font-weight:700;color:var(--muted);text-align:center;background:#fff;border:1px solid var(--line-2);border-radius:7px;padding:3px 0;box-shadow:var(--shadow)}
   .tree{display:inline-block;min-width:100%}
   .tree ul{display:flex;padding-top:26px;position:relative}
   .tree ul.roots{flex-wrap:wrap;align-items:flex-start;padding-top:0;gap:18px 4px}
@@ -154,9 +160,9 @@
     <div class="dropzone" id="dropzone">
       <svg class="dz-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       <h2>Перетащите файл .xlsx сюда</h2>
-      <p>или нажмите, чтобы выбрать. Дубли строк схлопываются по «ID ФО».</p>
+      <p>или нажмите, чтобы выбрать. Дубли строк схлопываются по «ID».</p>
       <input type="file" id="fileInput" accept=".xlsx" class="hidden">
-      <div class="note">⚙ Обработка происходит полностью в браузере. Файл никуда не отправляется. Для чтения/записи используется локальная <b>exceljs.min.js</b>.</div>
+      <div class="note">⚙ Ожидаемые столбцы: <b>ID, Уровень, Название, Родительская ФО, id родительской ФО, Устаревшая запись, Недоступно для ЗИ, Не показывать на портале</b>. Столбцы определяются автоматически по заголовку. Файл, выгруженный этим инструментом, загружается обратно без правок.</div>
     </div>
   </div>
 
@@ -188,14 +194,22 @@
           Дерево иерархии
           <span class="count" id="treeCount"></span>
         </div>
-        <div id="treeBox"></div>
+        <div id="treeBox">
+          <div id="treeViewport"></div>
+          <div class="zoom-controls">
+            <button id="zoomIn" title="Приблизить">+</button>
+            <div class="zoom-level" id="zoomLabel">100%</div>
+            <button id="zoomOut" title="Отдалить">−</button>
+            <button id="zoomReset" title="Сбросить масштаб" style="font-size:11px;font-weight:700">⌂</button>
+          </div>
+        </div>
         <div class="legend">
           <span><i style="background:var(--green)"></i>ок</span>
           <span><i style="background:var(--amber)"></i>проверка</span>
           <span><i style="background:var(--red)"></i>структурная ошибка</span>
           <span><i style="background:var(--yellow)"></i>есть изменения</span>
           <span style="display:inline-flex;align-items:center;gap:5px"><span style="display:inline-block;width:16px;height:11px;border:1px dashed var(--muted-2);border-radius:3px;background:repeating-linear-gradient(45deg,#f8fafc,#f8fafc 4px,#f1f5f9 4px,#f1f5f9 8px)"></span>родитель вне файла (норма)</span>
-          <span style="margin-left:auto">💡 перетащите узел на другой, чтобы сменить родителя</span>
+          <span style="margin-left:auto">💡 Колесо мыши — масштаб · ЛКМ на фоне (зажать) — перемещение · перетащите узел на другой, чтобы сменить родителя</span>
         </div>
       </div>
 
@@ -263,22 +277,30 @@ function cellStr(v){
 /* ================= COLUMN DETECTION ================= */
 const COLDEFS=[
   {key:'ke',pats:[/^ке$/i,/конфигурац/i]},
-  {key:'name',pats:[/^фо$/i,/функциональн.*обл/i]},
-  {key:'id',pats:[/id\s*фо/i,/^ид\s*фо/i]},
-  {key:'unavail',pats:[/недоступн/i]},
-  {key:'hidden',pats:[/не показывать/i,/портал/i]},
-  {key:'obsolete',pats:[/устаревш/i]},
+  {key:'name',pats:[/^название$/i,/^фо$/i,/функциональн.*обл/i]},
+  {key:'id',pats:[/^id$/i,/id\s*фо/i,/^ид\s*фо/i]},
+  {key:'level',pats:[/^уровень$/i,/уровень/i,/level/i]},
+  {key:'pname',pats:[/^родительская\s*фо$/i,/родительск.*фо/i]},
+  {key:'pid',pats:[/^id\s*родительской/i,/^ид\s*родительской/i,/id\s*родительск/i]},
+  {key:'obsolete',pats:[/^устаревшая\s*запись$/i,/устаревш/i]},
+  {key:'unavail',pats:[/^недоступно\s*для\s*зи$/i,/недоступн/i]},
+  {key:'hidden',pats:[/^не\s*показывать\s*на\s*портале$/i,/не показывать/i,/портал/i]},
   {key:'tzi',pats:[/тзи/i]},
-  {key:'pname',pats:[/родительск.*фо/i]},
-  {key:'pid',pats:[/id\s*родительск/i]},
   {key:'relname',pats:[/связанн.*фо.*релиз/i]},
   {key:'relid',pats:[/id\s*связанн/i]},
-  {key:'level',pats:[/уровень/i,/level/i]},
 ];
 function detectColumns(headers){
   const map={};
   headers.forEach((h,i)=>{const hh=norm(h);COLDEFS.forEach(d=>{if(map[d.key]===undefined&&d.pats.some(p=>p.test(hh)))map[d.key]=i;});});
-  if(map.ke===undefined)map.ke=0; if(map.name===undefined)map.name=1; if(map.id===undefined)map.id=2;
+  // Fallback по позиции для формата: ID(0), Уровень(1), Название(2), Родительская ФО(3), id родительской ФО(4), Устаревшая запись(5), Недоступно для ЗИ(6), Не показывать на портале(7)
+  if(map.id===undefined)map.id=0;
+  if(map.level===undefined)map.level=1;
+  if(map.name===undefined)map.name=2;
+  if(map.pname===undefined)map.pname=3;
+  if(map.pid===undefined)map.pid=4;
+  if(map.obsolete===undefined)map.obsolete=5;
+  if(map.unavail===undefined)map.unavail=6;
+  if(map.hidden===undefined)map.hidden=7;
   return map;
 }
 
@@ -530,7 +552,7 @@ function renderTree(){
   let roots=(children.get(ROOT)||[]).filter(id=>inc.has(id));
   sortKids(roots);
   const html=roots.map(node).filter(Boolean).join('');
-  $('treeBox').innerHTML=html?`<div class="tree"><ul class="roots">${html}</ul></div>`+(capped?`<div style="padding:14px;color:var(--muted);font-size:12px">Показаны не все узлы (ограничение ${MAX} для скорости). Используйте поиск или фильтр по КЕ, чтобы сузить вывод.</div>`:'')
+  $('treeViewport').innerHTML=html?`<div class="tree"><ul class="roots">${html}</ul></div>`+(capped?`<div style="padding:14px;color:var(--muted);font-size:12px">Показаны не все узлы (ограничение ${MAX} для скорости). Используйте поиск или фильтр по КЕ, чтобы сузить вывод.</div>`:'')
     :`<div style="text-align:center;color:var(--muted);padding:40px">Нет ФО по текущему фильтру.</div>`;
   let cnt=0; nodes.forEach(n=>{if(!n.synthetic&&inc.has(n.id))cnt++;});
   $('treeCount').textContent=cnt.toLocaleString('ru-RU')+' ФО';
@@ -539,16 +561,70 @@ function renderTree(){
 /* ---- tree events (delegated) ---- */
 function bindTree(){
   const box=$('treeBox');
-  box.onclick=e=>{
+  const vp=$('treeViewport');
+
+  /* --- zoom/pan state --- */
+  let scale=1, panX=0, panY=0;
+  let isPanning=false, startX=0, startY=0, startPanX=0, startPanY=0;
+  const MIN_SCALE=0.15, MAX_SCALE=3;
+
+  function applyTransform(){
+    vp.style.transform=`translate(${panX}px,${panY}px) scale(${scale})`;
+    $('zoomLabel').textContent=Math.round(scale*100)+'%';
+  }
+
+  /* wheel zoom */
+  box.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const rect=box.getBoundingClientRect();
+    const mouseX=e.clientX-rect.left-panX;
+    const mouseY=e.clientY-rect.top-panY;
+    const delta=e.deltaY>0?0.9:1.1;
+    const newScale=Math.min(MAX_SCALE,Math.max(MIN_SCALE,scale*delta));
+    panX-=mouseX*(newScale-scale);
+    panY-=mouseY*(newScale-scale);
+    scale=newScale;
+    applyTransform();
+  },{passive:false});
+
+  /* left-button pan (only when dragging on background, not on .fo nodes) */
+  let didPan=false;
+  box.addEventListener('mousedown',e=>{
+    if(e.button===0&&!e.target.closest('.fo')&&!e.target.closest('[data-tog]')){
+      e.preventDefault();
+      isPanning=true; didPan=false;
+      startX=e.clientX; startY=e.clientY; startPanX=panX; startPanY=panY;
+      box.classList.add('panning');
+    }
+  });
+  window.addEventListener('mousemove',e=>{
+    if(!isPanning)return;
+    const dx=e.clientX-startX, dy=e.clientY-startY;
+    if(Math.abs(dx)>3||Math.abs(dy)>3) didPan=true;
+    panX=startPanX+dx;
+    panY=startPanY+dy;
+    applyTransform();
+  });
+  window.addEventListener('mouseup',e=>{
+    if(e.button===0&&isPanning){ isPanning=false; box.classList.remove('panning'); }
+  });
+
+  /* zoom buttons */
+  $('zoomIn').onclick=()=>{scale=Math.min(MAX_SCALE,scale*1.2);applyTransform();};
+  $('zoomOut').onclick=()=>{scale=Math.max(MIN_SCALE,scale/1.2);applyTransform();};
+  $('zoomReset').onclick=()=>{scale=1;panX=0;panY=0;applyTransform();};
+
+  /* click events on viewport */
+  vp.onclick=e=>{
     const tg=e.target.closest('[data-tog]');
     if(tg){const id=tg.getAttribute('data-tog'); state.expanded.has(id)?state.expanded.delete(id):state.expanded.add(id); renderTree(); return;}
     const fo=e.target.closest('.fo');
-    if(fo&&fo.dataset.id){ state.selected=fo.dataset.id; box.querySelectorAll('.fo.sel').forEach(n=>n.classList.remove('sel')); fo.classList.add('sel'); renderInspector(); }
+    if(fo&&fo.dataset.id){ state.selected=fo.dataset.id; vp.querySelectorAll('.fo.sel').forEach(n=>n.classList.remove('sel')); fo.classList.add('sel'); renderInspector(); }
   };
-  box.addEventListener('dragstart',e=>{const fo=e.target.closest('.fo[draggable="true"]');if(!fo)return;DRAG=fo.dataset.id;e.dataTransfer.setData('text/plain',DRAG);e.dataTransfer.effectAllowed='move';fo.classList.add('dragging');});
-  box.addEventListener('dragend',e=>{const fo=e.target.closest('.fo');if(fo)fo.classList.remove('dragging');box.querySelectorAll('.fo.drag-over').forEach(n=>n.classList.remove('drag-over'));});
-  box.addEventListener('dragover',e=>{const fo=e.target.closest('.fo');if(!fo)return;e.preventDefault();e.dataTransfer.dropEffect='move';if(!fo.classList.contains('drag-over')){box.querySelectorAll('.fo.drag-over').forEach(n=>n.classList.remove('drag-over'));fo.classList.add('drag-over');}});
-  box.addEventListener('drop',e=>{const fo=e.target.closest('.fo');if(!fo)return;e.preventDefault();fo.classList.remove('drag-over');if(DRAG&&fo.dataset.id)reparent(DRAG,fo.dataset.id);DRAG=null;});
+  vp.addEventListener('dragstart',e=>{const fo=e.target.closest('.fo[draggable="true"]');if(!fo)return;DRAG=fo.dataset.id;e.dataTransfer.setData('text/plain',DRAG);e.dataTransfer.effectAllowed='move';fo.classList.add('dragging');});
+  vp.addEventListener('dragend',e=>{const fo=e.target.closest('.fo');if(fo)fo.classList.remove('dragging');vp.querySelectorAll('.fo.drag-over').forEach(n=>n.classList.remove('drag-over'));});
+  vp.addEventListener('dragover',e=>{const fo=e.target.closest('.fo');if(!fo)return;e.preventDefault();e.dataTransfer.dropEffect='move';if(!fo.classList.contains('drag-over')){vp.querySelectorAll('.fo.drag-over').forEach(n=>n.classList.remove('drag-over'));fo.classList.add('drag-over');}});
+  vp.addEventListener('drop',e=>{const fo=e.target.closest('.fo');if(!fo)return;e.preventDefault();fo.classList.remove('drag-over');if(DRAG&&fo.dataset.id)reparent(DRAG,fo.dataset.id);DRAG=null;});
 }
 
 /* ================= PROBLEMS ================= */
@@ -625,7 +701,7 @@ function reparent(childId,newKey){
   else if(String(newKey).startsWith('synth::')){ /* выбран текущий внешний родитель — без изменений */ }
   else { const np=FOS.get(newKey); if(!np){toast('Родитель не найден');return;} child.pid=np.realId||''; child.pname=np.name; }
   renderAll(); state.selected=childId;
-  const box=$('treeBox'); const el=box.querySelector(`.fo[data-id="${cssEsc(childId)}"]`); if(el)el.classList.add('sel');
+  const vp=$('treeViewport'); const el=vp.querySelector(`.fo[data-id="${cssEsc(childId)}"]`); if(el)el.classList.add('sel');
   renderInspector(); toast('Родитель изменён');
 }
 function cssEsc(s){return String(s).replace(/["\\]/g,'\\$&');}
