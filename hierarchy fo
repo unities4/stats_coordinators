@@ -57,7 +57,7 @@
   .stat.ok .bar{background:var(--green)} .stat.warn .bar{background:var(--amber)} .stat.err .bar{background:var(--red)} .stat.info .bar{background:var(--brand-l)} .stat.chg .bar{background:var(--yellow)}
 
   .layout{display:flex;flex-direction:column;gap:16px}
-  .inspector-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .inspector-row{display:grid;grid-template-columns:2fr 1fr;gap:16px}
   @media(max-width:900px){.inspector-row{grid-template-columns:1fr}}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
   .card-h{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line);font-weight:700;font-size:14px}
@@ -65,7 +65,7 @@
   .card-b{padding:14px 16px}
 
   /* roots panel */
-  #rootsBox{overflow-x:auto;overflow-y:hidden;max-height:none;padding:12px 14px;display:flex;flex-wrap:nowrap;gap:8px;align-items:flex-start}
+  #rootsBox{overflow-x:hidden;overflow-y:auto;max-height:260px;padding:12px 14px;display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start}
   .root-chip{display:inline-flex;align-items:center;gap:6px;background:var(--gray-bg);border:1px solid var(--line-2);border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;transition:.15s}
   .root-chip:hover{border-color:var(--brand-l);color:var(--brand);background:var(--blue-bg)}
   .root-chip.sel{border-color:var(--brand);background:var(--blue-bg);color:var(--brand)}
@@ -157,17 +157,23 @@
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M6 9v3a3 3 0 003 3h0M15 18h-3a3 3 0 01-3-3"/></svg>
     Иерархия функциональных областей
   </h1>
-  <p>Локальный инструмент (без обращений в интернет). Загрузите выгрузку ФО (.xlsx), наведите порядок в иерархии «родитель → потомок», приведите уровни к стандарту и выгрузите только изменённые ФО для внесения в БД.</p>
 </div>
 
 <div class="wrap">
   <div id="uploadView">
     <div class="dropzone" id="dropzone">
       <svg class="dz-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-      <h2>Перетащите файл .xlsx сюда</h2>
-      <p>или нажмите, чтобы выбрать. Дубли строк схлопываются по «ID».</p>
+      <h2>Загрузить файл ФО (.xlsx)</h2>
+      <p>Перетащите или нажмите для выбора</p>
       <input type="file" id="fileInput" accept=".xlsx" class="hidden">
-      <div class="note">⚙ Ожидаемые столбцы: <b>ID, Уровень, Название, Родительская ФО, id родительской ФО, Устаревшая запись, Недоступно для ЗИ, Не показывать на портале</b>. Столбцы определяются автоматически по заголовку. Файл, выгруженный этим инструментом, загружается обратно без правок.</div>
+    </div>
+    <div id="keFileZone" style="margin-top:14px">
+      <div class="dropzone" id="dropzoneKE" style="padding:28px 28px">
+        <svg style="width:32px;height:32px;margin:0 auto 10px;color:var(--brand);opacity:.75;display:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+        <p style="font-size:13px;color:var(--muted)">Загрузить файл КЕ → ФО <span style="color:var(--muted-2);font-size:11px">(необязательно)</span></p>
+        <input type="file" id="fileInputKE" accept=".xlsx" class="hidden">
+      </div>
+      <div id="keFileStatus" style="font-size:12px;color:var(--muted);margin-top:8px;text-align:center"></div>
     </div>
   </div>
 
@@ -186,6 +192,8 @@
       <div class="sep"></div>
       <button class="btn ghost" id="btnReset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 109-9 9 9 0 00-6.36 2.64L3 8"/><path d="M3 3v5h5"/></svg>Сбросить правки</button>
       <button class="btn ghost" id="btnNew"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Другой файл</button>
+      <button class="btn ghost" id="btnLoadKE" title="Загрузить файл КЕ→ФО"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>Файл КЕ</button>
+      <input type="file" id="fileInputKE2" accept=".xlsx" class="hidden">
       <button class="btn green" id="btnExport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Выгрузить изменения</button>
     </div>
 
@@ -242,6 +250,7 @@
 "use strict";
 /* ================= CONST ================= */
 const ROOT='__ROOT__';
+const ROOT_FO_NAME='Функциональные области бизнес-приложения';
 const LEVEL_CANON={0:'0-й уровень',1:'1-ый уровень',2:'2-й уровень',3:'3-ий уровень',4:'4-ый уровень'};
 function canonLevel(n){ if(n==null||isNaN(n))return null; return LEVEL_CANON[n]!=null?LEVEL_CANON[n]:(n+'-й уровень'); }
 const LEVEL_CHOICES=[0,1,2,3,4];
@@ -253,6 +262,7 @@ let FOS=new Map();   // id(key) -> record
 let MODEL=null;      // {nodes, children}
 let ORIG=null;       // snapshot for reset
 let META={rows:0, autoFixed:0};
+let KE_MAP=new Map(); // foName/foId -> ke (from second file)
 let state={ke:'ALL', filter:'all', search:'', selected:null, expanded:new Set()};
 let DRAG=null;
 
@@ -287,11 +297,12 @@ const COLDEFS=[
   {key:'ke',pats:[/^ке$/i,/конфигурац/i]},
   {key:'name',pats:[/^название$/i,/^фо$/i,/функциональн.*обл/i]},
   {key:'id',pats:[/^id$/i,/id\s*фо/i,/^ид\s*фо/i]},
-  {key:'level',pats:[/^уровень$/i,/уровень/i,/level/i]},
+  {key:'level',pats:[/^уровень$/i,/^level$/i]},
   {key:'pname',pats:[/^родительская\s*фо$/i,/родительск.*фо/i]},
   {key:'pid',pats:[/^id\s*родительской/i,/^ид\s*родительской/i,/id\s*родительск/i]},
+  {key:'plevel',pats:[/уровень\s*родительской/i,/уровень.*родит/i]},
   {key:'obsolete',pats:[/^устаревшая\s*запись$/i,/устаревш/i]},
-  {key:'unavail',pats:[/^недоступно\s*для\s*зи$/i,/недоступн/i]},
+  {key:'unavail',pats:[/^недоступна?\s*для\s*зи$/i,/недоступн/i]},
   {key:'hidden',pats:[/^не\s*показывать\s*на\s*портале$/i,/не показывать/i,/портал/i]},
   {key:'tzi',pats:[/тзи/i]},
   {key:'relname',pats:[/связанн.*фо.*релиз/i]},
@@ -300,15 +311,16 @@ const COLDEFS=[
 function detectColumns(headers){
   const map={};
   headers.forEach((h,i)=>{const hh=norm(h);COLDEFS.forEach(d=>{if(map[d.key]===undefined&&d.pats.some(p=>p.test(hh)))map[d.key]=i;});});
-  // Fallback по позиции для формата: ID(0), Уровень(1), Название(2), Родительская ФО(3), id родительской ФО(4), Устаревшая запись(5), Недоступно для ЗИ(6), Не показывать на портале(7)
+  // Fallback по позиции: ID(0), Уровень(1), Название(2), Родительская ФО(3), id родительской ФО(4), Уровень родительской ФО(5), Устаревшая запись(6), Недоступна для ЗИ(7), не показывать на портале(8)
   if(map.id===undefined)map.id=0;
   if(map.level===undefined)map.level=1;
   if(map.name===undefined)map.name=2;
   if(map.pname===undefined)map.pname=3;
   if(map.pid===undefined)map.pid=4;
-  if(map.obsolete===undefined)map.obsolete=5;
-  if(map.unavail===undefined)map.unavail=6;
-  if(map.hidden===undefined)map.hidden=7;
+  if(map.plevel===undefined)map.plevel=5;
+  if(map.obsolete===undefined)map.obsolete=6;
+  if(map.unavail===undefined)map.unavail=7;
+  if(map.hidden===undefined)map.hidden=8;
   return map;
 }
 
@@ -445,6 +457,23 @@ function buildModel(){
     if(f.synthetic)return;
     if(f.level==null) f.problems.push({t:'level_unparsed',sev:'warn',msg:`Уровень не распознан: «${f.origLevelRaw||'—'}».`});
     if(f.dupConflict) f.problems.push({t:'dup_conflict',sev:'warn',msg:'В исходных строках у этого ID разные родитель/уровень — данные противоречивы.'});
+    // Apply KE from second file if available
+    if(KE_MAP.size){
+      const keVal=KE_MAP.get(norm(f.name))||KE_MAP.get(norm(f.realId))||'';
+      if(keVal) f.ke=keVal;
+    }
+  });
+  // Level sequence validation: parent level N → child must be N+1
+  nodes.forEach(f=>{
+    if(f.synthetic||f.parentKey===ROOT)return;
+    const parent=nodes.get(f.parentKey);
+    if(!parent||parent.synthetic)return;
+    if(f.level!=null&&parent.level!=null){
+      if(f.level!==parent.level+1){
+        f.problems.push({t:'level_gap',sev:'err',
+          msg:`Ошибка уровней: родительская ФО «${parent.name}» имеет уровень ${parent.level}, а дочерняя «${f.name}» — уровень ${f.level}. Ожидается уровень ${parent.level+1}.`});
+      }
+    }
   });
   // child counts on synthetic
   synth.forEach(s=>{s.childCount=(children2.get(s.id)||[]).length;});
@@ -489,9 +518,10 @@ function renderStats(){
 /* ---- roots panel ---- */
 function renderRoots(){
   const box=$('rootsBox');
+  // Показываем только реальные ФО у которых D (pname) и E (pid) пустые
   const roots=[...FOS.values()].filter(f=>{
     if(state.ke!=='ALL'&&f.ke!==state.ke)return false;
-    return f.parentKey===ROOT;
+    return !f.pname && !f.pid; // столбцы D и E пустые
   }).sort((a,b)=>(a.name||'').localeCompare(b.name||'','ru'));
   $('rootsCount').textContent=roots.length?roots.length.toLocaleString('ru-RU')+' шт.':'';
   if(!roots.length){box.innerHTML=`<div style="color:var(--muted);font-size:13px">Нет верхних узлов.</div>`;return;}
@@ -505,7 +535,6 @@ function renderRoots(){
     renderTree();
     renderInspector();
     renderRoots();
-    // scroll chip into view
     el.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});
   });
 }
@@ -579,9 +608,27 @@ function renderTree(){
   }
   let roots=(children.get(ROOT)||[]).filter(id=>inc.has(id));
   sortKids(roots);
-  const html=roots.map(node).filter(Boolean).join('');
+  const rootsHtml=roots.map(node).filter(Boolean).join('');
+
+  // Virtual root node "Функциональные области бизнес-приложения" (level 0) wrapping all
+  const rootFoTogId='__virtual_root__';
+  const rootExpanded=autoExpand||state.expanded.has(rootFoTogId);
+  let html='';
+  if(rootsHtml){
+    const togBtn=`<span class="tg" data-tog="${rootFoTogId}">${rootExpanded?'−':'+'}</span>`;
+    const virtualNodeHtml=`<div class="fo" data-id="${rootFoTogId}" style="background:linear-gradient(135deg,var(--blue-bg),#fff);border-color:var(--brand);box-shadow:0 2px 8px rgba(0,76,151,.15);cursor:default" title="Виртуальный корневой узел — уровень 0">${togBtn}<span class="nm" style="font-weight:700;color:var(--brand)">${esc(ROOT_FO_NAME)}</span><span class="lvlb" style="background:var(--brand);color:#fff">Ур. 0</span></div>`;
+    const childrenHtml=rootExpanded?`<ul>${rootsHtml}</ul>`:'';
+    html=`<li><div class="liwrap">${virtualNodeHtml}</div>${childrenHtml}</li>`;
+  }
+
   $('treeViewport').innerHTML=html?`<div class="tree"><ul class="roots">${html}</ul></div>`+(capped?`<div style="padding:14px;color:var(--muted);font-size:12px">Показаны не все узлы (ограничение ${MAX} для скорости). Используйте поиск или фильтр по КЕ, чтобы сузить вывод.</div>`:'')
     :`<div style="text-align:center;color:var(--muted);padding:40px">Нет ФО по текущему фильтру.</div>`;
+
+  // bind virtual root toggle
+  const vp=$('treeViewport');
+  const vtog=vp.querySelector(`[data-tog="${rootFoTogId}"]`);
+  if(vtog) vtog.onclick=(e)=>{e.stopPropagation();state.expanded.has(rootFoTogId)?state.expanded.delete(rootFoTogId):state.expanded.add(rootFoTogId);renderTree();};
+
   let cnt=0; nodes.forEach(n=>{if(!n.synthetic&&inc.has(n.id))cnt++;});
   $('treeCount').textContent=cnt.toLocaleString('ru-RU')+' ФО';
 }
@@ -756,6 +803,51 @@ async function exportExcel(){
 }
 
 /* ================= FILE FLOW ================= */
+// Column validation for main FO file
+const REQUIRED_FO_HEADERS=[
+  {pat:/^id$/i, label:'ID'},
+  {pat:/^уровень$/i, label:'Уровень'},
+  {pat:/^название$/i, label:'Название'},
+  {pat:/^родительская\s*фо$/i, label:'Родительская ФО'},
+  {pat:/^id\s*родительской/i, label:'id родительской ФО'},
+  {pat:/^уровень\s*родительской/i, label:'Уровень родительской ФО'},
+  {pat:/^устаревшая\s*запись$/i, label:'Устаревшая запись'},
+  {pat:/недоступна?\s*для\s*зи/i, label:'Недоступна для ЗИ'},
+  {pat:/не\s*показывать\s*на\s*портале/i, label:'не показывать на портале'},
+];
+function validateFOHeaders(headers){
+  const missing=REQUIRED_FO_HEADERS.filter(req=>!headers.some(h=>req.pat.test(norm(h))));
+  return missing;
+}
+
+async function handleKEFile(file){
+  overlay(true,'Чтение файла КЕ…');
+  await new Promise(r=>setTimeout(r,30));
+  try{
+    const wb=await readWorkbook(file);
+    const ws=wb.worksheets[0];
+    if(!ws)throw new Error('В книге нет листов');
+    let heads=[];
+    ws.getRow(1).eachCell({includeEmpty:true},(c,col)=>{heads[col-1]=norm(cellStr(c.value));});
+    // find КЕ and ФО columns
+    const keIdx=heads.findIndex(h=>/^ке$/i.test(h)||/конфигурац/i.test(h));
+    const foIdx=heads.findIndex(h=>/^фо$/i.test(h)||/^название$/i.test(h)||/функциональн.*обл/i.test(h));
+    if(keIdx<0||foIdx<0) throw new Error('Не найдены столбцы КЕ и ФО. Ожидаются заголовки «КЕ» и «ФО».');
+    KE_MAP=new Map();
+    ws.eachRow({includeEmpty:false},(row,rn)=>{
+      if(rn===1)return;
+      const ke=norm(cellStr(row.getCell(keIdx+1).value));
+      const fo=norm(cellStr(row.getCell(foIdx+1).value));
+      if(ke&&fo) KE_MAP.set(fo,ke);
+    });
+    // apply to loaded FOS
+    if(FOS.size) { FOS.forEach(f=>{ const ke=KE_MAP.get(norm(f.name))||KE_MAP.get(norm(f.realId)); if(ke) f.ke=ke; }); renderAll(); }
+    const keStatus=$('keFileStatus'); if(keStatus){ keStatus.textContent=`✓ КЕ загружены: ${KE_MAP.size} записей`; keStatus.style.color='var(--green)'; }
+    toast(`Файл КЕ загружен: ${KE_MAP.size} записей`);
+  }catch(err){ alert('Ошибка файла КЕ: '+err.message); console.error(err); }
+  finally{ overlay(false); }
+}
+
 async function handleFile(file){
   overlay(true,'Чтение файла…');
   await new Promise(r=>setTimeout(r,30));
@@ -763,6 +855,14 @@ async function handleFile(file){
     const wb=await readWorkbook(file);
     overlay(true,'Разбор и дедупликация…');
     await new Promise(r=>setTimeout(r,10));
+    // Validate headers before parsing
+    const ws=wb.worksheets[0];
+    const testHeaders=[];
+    if(ws) ws.getRow(1).eachCell({includeEmpty:true},(c,col)=>{testHeaders[col-1]=cellStr(c.value);});
+    const missing=validateFOHeaders(testHeaders);
+    if(missing.length){
+      throw new Error(`Файл не содержит обязательных столбцов:\n${missing.map(m=>'• '+m.label).join('\n')}`);
+    }
     parseWorkbook(wb);
     state={ke:'ALL',filter:'all',search:'',selected:null,expanded:new Set()};
     $('uploadView').classList.add('hidden');
@@ -782,6 +882,15 @@ fi.onchange=e=>{const f=e.target.files[0];if(f)handleFile(f);};
 ['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('drag');}));
 dz.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)handleFile(f);});
 
+const dzKE=$('dropzoneKE'),fiKE=$('fileInputKE');
+if(dzKE){
+  dzKE.onclick=()=>fiKE.click();
+  fiKE.onchange=e=>{const f=e.target.files[0];if(f)handleKEFile(f);};
+  ['dragenter','dragover'].forEach(ev=>dzKE.addEventListener(ev,e=>{e.preventDefault();dzKE.classList.add('drag');}));
+  ['dragleave','drop'].forEach(ev=>dzKE.addEventListener(ev,e=>{e.preventDefault();dzKE.classList.remove('drag');}));
+  dzKE.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)handleKEFile(f);});
+}
+
 $('keFilter').onchange=e=>{state.ke=e.target.value;state.selected=null;renderStats();renderRoots();renderTree();renderInspector()};
 let searchT; $('searchInput').oninput=e=>{state.search=e.target.value.trim();clearTimeout(searchT);searchT=setTimeout(renderTree,180);};
 $('filterTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{$('filterTabs').querySelectorAll('button').forEach(x=>x.classList.remove('act'));b.classList.add('act');state.filter=b.getAttribute('data-f');renderTree();});
@@ -790,6 +899,10 @@ $('btnCollapse').onclick=()=>{state.expanded.clear();renderTree();};
 $('btnReset').onclick=()=>{ if(!ORIG)return; if(!confirm('Сбросить все правки к исходным данным файла?'))return; restore(ORIG); FOS.forEach(f=>{const c=canonLevel(f.level);if(c!=null)f.levelRaw=c;}); state.selected=null; renderAll(); toast('Правки сброшены'); };
 $('btnNew').onclick=()=>{ $('mainView').classList.add('hidden'); $('uploadView').classList.remove('hidden'); fi.value=''; FOS=new Map(); MODEL=null; };
 $('btnExport').onclick=exportExcel;
+// KE file button in toolbar
+const fiKE2=$('fileInputKE2');
+$('btnLoadKE').onclick=()=>fiKE2.click();
+fiKE2.onchange=e=>{const f=e.target.files[0];if(f)handleKEFile(f);};
 </script>
 </body>
 </html>
